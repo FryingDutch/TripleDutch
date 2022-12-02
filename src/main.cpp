@@ -5,6 +5,9 @@
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Hello World\n my friend";
+    while(true)
+    {
+        std::cout << "Hello World\n my friend";
+    }
     return 0;
 }
