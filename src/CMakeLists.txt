@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project ( tdserver )
 
 add_executable(tdserver 
-		main.cpp
+		./source/main.cpp
+		./source/tdaSystem.cpp
+		./source/tdaServer.cpp
 		)
 target_link_libraries(tdserver OpenSSL::SSL)
 target_link_libraries(tdserver ${Boost_LIBRARIES})
