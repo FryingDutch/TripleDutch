@@ -20,6 +20,10 @@ if(OPENSSL_FOUND)
 	include_directories(${OPENSSL_INCLUDE_DIR})
 endif()
 
+set(FULL_PATH_MYSQL_CONN /TripleDutch/mysqlconnector)
+include_directories(${FULL_PATH_MYSQL_CONN}/include)
+link_directories(${FULL_PATH_MYSQL_CONN}/lib)
+
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
   message("Found ccache ${CCACHE_FOUND}")
