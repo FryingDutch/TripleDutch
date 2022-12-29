@@ -8,7 +8,6 @@ FROM base AS builder
 RUN apt-get update &&\
     apt-get install -yq cmake gcc g++ &&\
     apt-get install -yq libcurl4-openssl-dev &&\
-    apt-get install -yq libjsoncpp-dev &&\
     apt-get install -yq libmysqlcppconn-dev &&\
     apt-get install -yq libboost-all-dev &&\
     apt-get install -yq libssl-dev &&\
@@ -28,9 +27,11 @@ COPY ./ ./
 
 #build
 WORKDIR /TripleDutch/build
+# ENTRYPOINT ["/bin/bash"]
 RUN cmake .. &&\
     make
 
-FROM base AS finalimage
-COPY --from=builder /TripleDutch/build/src/tdserver /
-ENTRYPOINT ["/tdserver"]
+# FROM base AS finalimage
+# COPY --from=builder /TripleDutch/build/src/tdserver /
+# COPY --from=builder /usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
+ENTRYPOINT ["/TripleDutch/build/src/tdserver"]

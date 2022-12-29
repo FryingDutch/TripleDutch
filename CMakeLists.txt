@@ -12,6 +12,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(Tcmalloc)
 find_package(Threads)
+find_package(MySQL)
 
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
@@ -19,10 +20,6 @@ find_package(OpenSSL REQUIRED)
 if(OPENSSL_FOUND)
 	include_directories(${OPENSSL_INCLUDE_DIR})
 endif()
-
-set(FULL_PATH_MYSQL_CONN /TripleDutch/mysqlconnector)
-include_directories(${FULL_PATH_MYSQL_CONN}/include)
-link_directories(${FULL_PATH_MYSQL_CONN}/lib)
 
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
@@ -57,5 +54,7 @@ set(PROJECT_INCLUDE_DIR
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
+include_directories(/usr/include/cppconn)
+link_directories(/usr/lib/aarch64-linux-gnu)
 
 add_subdirectory(src)
