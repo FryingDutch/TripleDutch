@@ -24,6 +24,7 @@ services:
   td_server:
     build: .
     container_name: tripledutch
+    restart: on-failure
     ports: 
       - "8001:8001"
     depends_on:

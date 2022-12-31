@@ -11,9 +11,8 @@ int main(int argc, char* argv[])
     sql::Driver *driver = get_driver_instance();
 
     // Connect to the database
-    std::unique_ptr<sql::Connection> conn(driver->connect("tcp://db:3306", "root", "root"));   
+    std::unique_ptr<sql::Connection> conn(driver->connect("tcp://db", "root", "root"));   
 
-
+    TDA::TDAServer::startup();
     return 0;
-    //TDA::TDAServer::startup();
 }
