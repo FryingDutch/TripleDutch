@@ -8,6 +8,7 @@
 #include <thread>
 #include <optional>
 #include "../headers/Server.h"
+#include "../headers/QueryBuilder.h"
 
 namespace TDA
 {
@@ -17,11 +18,20 @@ namespace TDA
         crow::SimpleApp app;
 
         CROW_ROUTE(app, "/status")
-            ([&](const crow::request& req) {
+            ([&](const crow::request& req) 
+            {
+                TDA::QueryBuilder qb;
+                std::vector<std::string>columns{"id", "name"};
+                std::vector<std::vector<std::string>> results = qb.select(columns).from("test").fetchAll();
 
-            crow::json::wvalue x;
-            x["servername"] = "Helo world!";
-            return crow::response(200, x);
+                crow::json::wvalue jsonResult;
+                for(size_t row = 0; row < results.size(); row++)
+                {
+                    std::string rowName = "row" + std::to_string(row);
+                    jsonResult[rowName] = results[row];
+                }
+
+                return crow::response(200, jsonResult);
         });
 
         CROW_ROUTE(app, "/getlock")
