@@ -1,4 +1,5 @@
-#include "../headers/TDAServer.h"
+#include "../headers/Server.h"
+#include "../headers/QueryBuilder.h"
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -7,12 +8,9 @@
 
 int main(int argc, char* argv[])
 {
-    // Load the MySQL Connector/C++ driver
-    sql::Driver *driver = get_driver_instance();
+    TDA::QueryBuilder qb;
+    qb.doTest();
 
-    // Connect to the database
-    std::unique_ptr<sql::Connection> conn(driver->connect("tcp://db", "root", "root"));   
-
-    TDA::TDAServer::startup();
-    return 0;
+    TDA::Server::startup();
+    return 1;
 }

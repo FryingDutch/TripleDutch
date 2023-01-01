@@ -7,12 +7,12 @@
 #include <vector>
 #include <thread>
 #include <optional>
-#include "../headers/TDAServer.h"
+#include "../headers/Server.h"
 
 namespace TDA
 {
     //runtime functions
-    void TDAServer::startup()
+    void Server::startup()
     {
         crow::SimpleApp app;
 

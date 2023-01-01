@@ -1,16 +1,16 @@
 #include <iostream>
-#include "../headers/TDAServer.h"
-#include "../headers/TDASystem.h"
+#include "../headers/Server.h"
+#include "../headers/System.h"
 
 namespace TDA
 {
     //setting functions
-    void TDASystem::errormsg(const char* message)
+    void System::errormsg(const char* message)
     {
         std::cerr << "[ERROR]: " << message << "! Terminating...\n";
     }
 
-    bool TDASystem::isDigit(std::string str)
+    bool System::isDigit(std::string str)
     {
         if(str.length() < 1)
         {

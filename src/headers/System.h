@@ -3,7 +3,7 @@
 
 namespace TDA
 {
-    class TDASystem
+    class System
     {
 	private:
 		static std::mutex storageMutex;

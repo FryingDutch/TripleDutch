@@ -3,8 +3,8 @@ project ( tdserver )
 
 add_executable(tdserver 
 		./source/main.cpp
-		./source/tdaSystem.cpp
-		./source/tdaServer.cpp
+		./source/system.cpp
+		./source/server.cpp
 		)
 target_link_libraries(tdserver OpenSSL::SSL)
 target_link_libraries(tdserver ${Boost_LIBRARIES})

@@ -7,12 +7,12 @@
 
 namespace TDA
 {
-	class TDAServer
+	class Server
 	{
 	public:
 		static void startup();
 
 	public:
-		TDAServer();
+		Server();
 	};
 }
