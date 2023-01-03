@@ -9,6 +9,7 @@
 #include <optional>
 #include "../headers/Server.h"
 #include "../headers/QueryBuilder.h"
+#include "../headers/Logger.h"
 
 namespace TDA
 {
@@ -22,7 +23,7 @@ namespace TDA
             {
                 TDA::QueryBuilder qb;
                 std::vector<std::string>columns{"id", "name"};
-                std::vector<std::vector<std::string>> results = qb.select(columns).from("test").fetchAll();
+                std::vector<std::vector<std::string>> results = qb.select(columns).from("test").where("id = ?, name = ?", {{"3414", "Second Test"}}).fetchAll();
 
                 crow::json::wvalue jsonResult;
                 for(size_t row = 0; row < results.size(); row++)
@@ -30,7 +31,6 @@ namespace TDA
                     std::string rowName = "row" + std::to_string(row);
                     jsonResult[rowName] = results[row];
                 }
-
                 return crow::response(200, jsonResult);
         });
 
@@ -45,13 +45,11 @@ namespace TDA
         // Releasing the lock
         CROW_ROUTE(app, "/releaselock").methods("DELETE"_method)
             ([&](const crow::request& req) {
-            
             crow::json::wvalue x;
             x["servername"] = "Helo world!";
             return crow::response(200, x);
         });
 
-        // configure the app instance with given parameters
         app.port(8001).server_name("Noice");
 
         app.run();

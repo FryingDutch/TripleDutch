@@ -14,6 +14,7 @@ namespace TDA
             sql::Driver *driver;
             std::string selectStatement;
             std::string tableStatement;
+            std::string whereStatement;
             std::string query;
 
             uint32_t resultColumnCount;
@@ -23,11 +24,13 @@ namespace TDA
             };
             
         private:
-            std::unique_ptr<sql::Connection> getConnection(std::string host, std::string user, std::string password);
+            std::unique_ptr<sql::Connection> getConnection(std::string host = "tcp://db", std::string user = "root", std::string password = "root");
+            void clearQuery();
 
         public:
-            QueryBuilder select(std::vector<std::string>columns);
+            QueryBuilder select(std::vector<std::string>columns = std::vector<std::string>());
             QueryBuilder from(std::string table);
+            QueryBuilder where(std::string _whereStatement, std::vector<std::string> values = {});
             std::string getQuery();
             std::vector<std::vector<std::string>> fetchAll();
 

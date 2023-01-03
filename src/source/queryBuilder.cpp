@@ -19,7 +19,7 @@ namespace TDA
 
         do{
             try{
-                connection = std::unique_ptr<sql::Connection>(driver->connect("tcp://db", "root", "root"));
+                connection = std::unique_ptr<sql::Connection>(driver->connect(host, user, password));
             } catch (sql::SQLException& exception) {
                 errorCode = exception.getErrorCode();
                 std::cout << "Error(" << exception.getErrorCode() << ") Message: " << exception.what();
@@ -30,9 +30,19 @@ namespace TDA
         return connection;
     }
 
-    QueryBuilder QueryBuilder::select(std::vector<std::string>columns = std::vector<std::string>())
+    void QueryBuilder::clearQuery()
     {
+        this->selectStatement = "";
+        this->tableStatement = "";
+        this->whereStatement = "";
+        this->query = "";
+    }
+
+    QueryBuilder QueryBuilder::select(std::vector<std::string>columns)
+    {
+        this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
         this->selectStatement = "SELECT ";
+
         uint32_t numOfColumns = columns.size();
         if(numOfColumns == 0)
         {
@@ -59,9 +69,39 @@ namespace TDA
         return *this;
     }
 
+    QueryBuilder QueryBuilder::where(std::string _whereStatement, std::vector<std::string> values)
+    {
+        if(this->whereStatement.size() == 0)
+        {
+            if(values.size() > 0)
+            {
+                std::vector<uint32_t> replacementIndexes = {};
+                for(size_t stringIndex = 0; stringIndex < _whereStatement.size(); stringIndex++)
+                {
+                    if(_whereStatement[stringIndex] == '?')
+                    {
+                        replacementIndexes.push_back(stringIndex);
+                        Logger::writeToLog(Logger::sqlLogLocation.c_str(), values[replaceCount].c_str());
+                        _whereStatement.insert(stringIndex + 1, values[replaceCount]);
+                        _whereStatement.erase(stringIndex, 1);
+                        if(values.size() > ++replaceCount){
+                            _whereStatement.append(" AND ");
+                        }
+                    }
+                }
+            }
+            this->whereStatement = " WHERE " + _whereStatement;
+            Logger::writeToLog(Logger::sqlLogLocation.c_str(), this->whereStatement.c_str());
+        }
+
+        return *this;
+    }
+
     std::string QueryBuilder::getQuery()
     {
-        return this->selectStatement + this->tableStatement;
+        std::string stmt = this->selectStatement + this->tableStatement + this->whereStatement;
+        Logger::writeToLog(Logger::sqlLogLocation.c_str(), stmt.c_str());
+        return this->selectStatement + this->tableStatement + this->whereStatement;
     }
 
     std::vector<std::vector<std::string>> QueryBuilder::fetchAll()
@@ -69,6 +109,7 @@ namespace TDA
         std::unique_ptr<sql::Connection> connection = getConnection();
         if(!connection)
         {
+            Logger::writeToLog(Logger::sqlLogLocation.c_str(), "Unable to connect to database");
             exit(1);
         }
 

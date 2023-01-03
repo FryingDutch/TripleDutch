@@ -31,6 +31,8 @@ services:
       - phpma
     links:
       - db
+    volumes:
+      - ./logs:/logs
 volumes:
   db:
     driver: local
