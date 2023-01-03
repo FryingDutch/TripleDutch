@@ -6,10 +6,11 @@
 #include <vector>
 #include <iostream>
 #include "../headers/QueryBuilder.h"
+#include "../headers/Logger.h"
 
 namespace TDA
 {
-    std::unique_ptr<sql::Connection> QueryBuilder::getConnection(std::string host = "tcp//db", std::string user = "root", std::string password = "root")
+    std::unique_ptr<sql::Connection> QueryBuilder::getConnection(std::string host, std::string user, std::string password)
     {
         uint32_t errorCode = 0;
         uint32_t tries = 0;

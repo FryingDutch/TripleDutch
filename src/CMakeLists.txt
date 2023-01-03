@@ -5,6 +5,8 @@ add_executable(tdserver
 		./source/main.cpp
 		./source/system.cpp
 		./source/server.cpp
+		./source/queryBuilder.cpp
+		./source/logger.cpp
 		)
 target_link_libraries(tdserver OpenSSL::SSL)
 target_link_libraries(tdserver ${Boost_LIBRARIES})
