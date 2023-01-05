@@ -76,22 +76,15 @@ namespace TDA
             if(values.size() > 0)
             {
                 std::vector<uint32_t> replacementIndexes = {};
-                for(size_t stringIndex = 0; stringIndex < _whereStatement.size(); stringIndex++)
+                for(size_t i = 0; i < _whereStatement.size(); i++)
                 {
-                    if(_whereStatement[stringIndex] == '?')
+                    if(_whereStatement[i] == '?')
                     {
-                        replacementIndexes.push_back(stringIndex);
-                        Logger::writeToLog(Logger::sqlLogLocation.c_str(), values[replaceCount].c_str());
-                        _whereStatement.insert(stringIndex + 1, values[replaceCount]);
-                        _whereStatement.erase(stringIndex, 1);
-                        if(values.size() > ++replaceCount){
-                            _whereStatement.append(" AND ");
-                        }
+                        whereStatement.replace(i, i, values[i]);
                     }
                 }
             }
             this->whereStatement = " WHERE " + _whereStatement;
-            Logger::writeToLog(Logger::sqlLogLocation.c_str(), this->whereStatement.c_str());
         }
 
         return *this;
@@ -110,7 +103,6 @@ namespace TDA
         if(!connection)
         {
             Logger::writeToLog(Logger::sqlLogLocation.c_str(), "Unable to connect to database");
-            exit(1);
         }
 
         connection->setSchema("test");
