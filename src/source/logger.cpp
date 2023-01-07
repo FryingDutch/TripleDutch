@@ -1,107 +1,67 @@
 #include <sstream>
 #include <fstream>
 #include "../headers/Logger.h"
+#include "../headers/FileHandler.h"
 
 namespace TDA
 {
-	std::string Logger::workDir{ "/logs/" };
-	std::ifstream Logger::readFiles;
-	std::ofstream Logger::writefiles;
-	const std::string Logger::sqlLogLocation{Logger::workDir + "sql.log"};
+    const std::string Logger::logRoot{"logs/"};
+    const std::string Logger::sqlLogLocation{FileHandler::workDir + Logger::logRoot + "sql_connector.log"};    
 
-	void Logger::setWorkDir(const char* _path)
-	{
-		workDir = _path;
-	}
+    void Logger::createLog(std::string _path, std::string _msg)
+    {
+    	FileHandler::createFile(_path.c_str(), _msg.c_str());
+    }
 
-	void Logger::createLog(const char* _path, const char* _msg)
-	{
-		std::ofstream newLog(_path);
-		if (newLog)
-		{
-			static const char* emptyString = "";
-			if (_msg != emptyString)
-				newLog << _msg << "\n";
-			newLog.close();
-		}
-		else 
-	        std::cerr << "Error creating log\n";
-	}
+    void Logger::writeToLog(std::string _path, std::string _msg)
+    {
+    	FileHandler::writeToFile(_path.c_str(), _msg.c_str());
+    }
 
-	void Logger::copyLog(const char* _sourcePath, const char* _destinationPath)
-	{
-		std::string fullPath{ workDir + _sourcePath };
-		std::ifstream log(fullPath.c_str());
+    std::string Logger::readLog(std::string _name)
+    {
+    	return FileHandler::readFile(_name.c_str());
+    }
 
-		if (log)
-		{
-			std::ofstream copyLog(_destinationPath);
+    // SQL Logs / PRIVATE
 
-			if (copyLog)
-			{
-				copyLog << log.rdbuf();
-				copyLog.close();
-			}
+    void Logger::createLogSQL(std::string _msg)
+    {
+    	createLog(sqlLogLocation, _msg);
+    }
 
-			log.close();
-		}
-	    	else 
-	            std::cerr << "Error copying log\n";
-	}
+    void Logger::writeToLogSQL(std::string _msg)
+    {
+    	writeToLog(sqlLogLocation, _msg);
+    }
 
-	std::string Logger::readLog(const char* _name)
-	{
-		std::string fullPath{ workDir + _name };
-		std::ostringstream ss;
-		std::string result;
+    std::string Logger::readLogSQL()
+    {
+    	return readLog(sqlLogLocation);
+    }
 
-		std::ifstream logToRead(fullPath);
-		if (logToRead)
-		{
-			ss << logToRead.rdbuf();		
-			logToRead.close();
-			return ss.str();
-		}
+    // SQL Logs / PUBLIC
+    void Logger::SQL_Debug(std::string _msg)
+    {
+        static std::string debug = "SQL_DEBUG: ";
+        createLogSQL(debug + _msg);
+    }
 
-	    else 
-	    {
-	        std::cerr << "Error reading log\n";
-	        return "";
-	    }
-	}
+    void Logger::SQL_Info(std::string _msg)
+    {
+        static std::string info = "SQL_INFO: ";
+        createLogSQL(info + _msg);
+    }
 
-	void Logger::writeToLog(const char* _path, const char* _msg)
-	{
-		if (!checkLogExistence(_path))
-		{
-			createLog(_path, _msg);
-			return;
-		}
+    void Logger::SQL_Warning(std::string _msg)
+    {
+        static std::string warning = "SQL_WARNING: ";
+        createLogSQL(warning + _msg);
+    }
 
-		std::ofstream writeFile(_path, std::ios_base::app);
-
-		if (writeFile)
-		{
-			writeFile << _msg << "\n";
-			writeFile.close();
-		}
-
-		else
-		{
-			std::cerr << "Error writing to log\n";
-		} 
-	}
-
-	bool Logger::checkLogExistence(const char* _name)
-	{
-		std::string fullPath{_name};
-
-		readFiles.open(fullPath);
-		if (readFiles)
-		{
-			readFiles.close();
-			return true;
-		}
-		return false;
-	}
+    void Logger::SQL_Exception(std::string _errorMessage)
+    {
+        static std::string critical = "SQL_EXCEPTION: ";
+        createLogSQL(critical + _errorMessage);
+    }
 }

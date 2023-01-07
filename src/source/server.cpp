@@ -7,6 +7,8 @@
 #include <vector>
 #include <thread>
 #include <optional>
+#include <nlohmann/json.hpp>
+#include "../headers/System.h"
 #include "../headers/Server.h"
 #include "../headers/QueryBuilder.h"
 #include "../headers/Logger.h"
@@ -22,16 +24,44 @@ namespace TDA
             ([&](const crow::request& req) 
             {
                 TDA::QueryBuilder qb;
-                std::vector<std::string>columns{"id", "name"};
-                std::vector<std::vector<std::string>> results = qb.select(columns).from("test").where("id = ?, name = ?", {{"3414", "Second Test"}}).fetchAll();
 
-                crow::json::wvalue jsonResult;
-                for(size_t row = 0; row < results.size(); row++)
+                nlohmann::json resultJson;
+                resultJson["status"] = "unknown";
+                uint32_t responseCode = 200;
+
+                if (req.url_params.get("auth") == nullptr)
                 {
-                    std::string rowName = "row" + std::to_string(row);
-                    jsonResult[rowName] = results[row];
+                    resultJson["status"] = "no api key";
+                    responseCode = 400;
+                    return crow::response(responseCode, resultJson.dump());
                 }
-                return crow::response(200, jsonResult);
+
+                std::vector<std::string>columns{"api_key", "lock_name"};
+
+                resultJson["servername"] = System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"];
+                resultJson["locks"] = nlohmann::json{};
+
+                try{
+                    nlohmann::json result = qb.select(columns).from("all_locks").where("api_key = ?",{req.url_params.get("auth")}).fetchAll();
+                    resultJson["locks"] = result;
+                    resultJson["status"] = "ok";
+                    resultJson["error_message"] = "";
+                    responseCode = 200;
+                } catch (sql::SQLException& exception) {
+                    Logger::SQL_Exception(exception.what());
+                    resultJson["locks"] = nlohmann::json{};
+                    resultJson["status"] = "bad";
+                    resultJson["error_message"] = exception.what();
+                    responseCode = 400;
+                } catch (std::logic_error& exception) {
+                    Logger::SQL_Exception(exception.what());
+                    resultJson["locks"] = nlohmann::json{};
+                    resultJson["status"] = "bad";
+                    resultJson["error_message"] = exception.what();
+                    responseCode = 400;
+                }
+                                
+                return crow::response(responseCode, resultJson.dump());
         });
 
         CROW_ROUTE(app, "/getlock")
@@ -50,7 +80,7 @@ namespace TDA
             return crow::response(200, x);
         });
 
-        app.port(8001).server_name("Noice");
+        app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]);
 
         app.run();
     }

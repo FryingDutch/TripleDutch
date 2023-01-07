@@ -6,6 +6,7 @@ add_executable(tdserver
 		./source/system.cpp
 		./source/server.cpp
 		./source/queryBuilder.cpp
+		./source/fileHandler.cpp
 		./source/logger.cpp
 		./source/databaseConnector.cpp
 		)

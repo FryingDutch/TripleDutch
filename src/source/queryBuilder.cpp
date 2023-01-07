@@ -6,106 +6,99 @@
 #include <vector>
 #include <iostream>
 #include "../headers/QueryBuilder.h"
+#include "../headers/DatabaseConnector.h"
 #include "../headers/Logger.h"
+#include "../headers/System.h"
 
 namespace TDA
 {
-    std::unique_ptr<sql::Connection> QueryBuilder::getConnection(std::string host, std::string user, std::string password)
-    {
-        uint32_t errorCode = 0;
-        uint32_t tries = 0;
-
-        std::unique_ptr<sql::Connection> connection = nullptr;
-
-        do{
-            try{
-                connection = std::unique_ptr<sql::Connection>(driver->connect(host, user, password));
-            } catch (sql::SQLException& exception) {
-                errorCode = exception.getErrorCode();
-                std::cout << "Error(" << exception.getErrorCode() << ") Message: " << exception.what();
-                tries += 1;
-            }
-        } while (errorCode == ERROR_CODES::CANNOT_CONNECT && tries < 20);
-
-        return connection;
-    }
-
     void QueryBuilder::clearQuery()
     {
-        this->selectStatement = "";
-        this->tableStatement = "";
-        this->whereStatement = "";
-        this->query = "";
+        m_selectStatement = "";
+        m_tableStatement = "";
+        m_whereStatement = "";
+        m_query = "";
     }
 
-    QueryBuilder QueryBuilder::select(std::vector<std::string>columns)
+    QueryBuilder QueryBuilder::select(std::vector<std::string>_columns)
     {
         this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
-        this->selectStatement = "SELECT ";
+        m_selectStatement = "SELECT ";
 
-        uint32_t numOfColumns = columns.size();
+        uint32_t numOfColumns = _columns.size();
         if(numOfColumns == 0)
         {
-            this->selectStatement += "*";
+            m_selectStatement += "*";
             return *this;
         };
 
         for(size_t i = 0; i < numOfColumns; i++)
         {
-            this->selectStatement += columns[i] + ",";
+            m_selectStatement += _columns[i] + ",";
         }
 
-        if(this->selectStatement.size() > 1 && this->selectStatement[this->selectStatement.size() - 1] == ',')
+        if(m_selectStatement.size() > 1 && m_selectStatement[m_selectStatement.size() - 1] == ',')
         {
-            this->selectStatement.pop_back();
+            m_selectStatement.pop_back();
         }
 
         return *this;
     }
 
-    QueryBuilder QueryBuilder::from(std::string table)
+    QueryBuilder QueryBuilder::from(std::string _table)
     {
-        this->tableStatement = " FROM " + table;
+        m_tableStatement = " FROM " + _table;
         return *this;
     }
 
-    QueryBuilder QueryBuilder::where(std::string _whereStatement, std::vector<std::string> values)
+    QueryBuilder QueryBuilder::where(std::string _stmt, std::vector<std::string> _values, bool _isAnd)
     {
-        if(this->whereStatement.size() == 0)
+        if(m_whereStatement.size() == 0 || _isAnd)
         {
-            if(values.size() > 0)
+            if(_values.size() > 0)
             {
-                std::vector<uint32_t> replacementIndexes = {};
-                for(size_t i = 0; i < _whereStatement.size(); i++)
+                uint32_t numOfReplacements = 0;
+                for(size_t i = 0; i < _stmt.size() && numOfReplacements < _values.size(); i++)
                 {
-                    if(_whereStatement[i] == '?')
+                    if(_stmt[i] == '?')
                     {
-                        whereStatement.replace(i, i, values[i]);
+                        std::string value = _values[numOfReplacements];
+                        if(!System::isDigit(value))
+                        {
+                            value = ("\'" + value + "\'");
+                        }
+                        _stmt.replace(i, 1, value);
+                        numOfReplacements++;
                     }
                 }
             }
-            this->whereStatement = " WHERE " + _whereStatement;
+            m_whereStatement = (_isAnd ? m_whereStatement + " AND " : " WHERE ") + _stmt;
         }
+
+        return *this;
+    }
+
+    QueryBuilder QueryBuilder::And(std::string _stmt, std::vector<std::string> _values)
+    {
+        this->where(_stmt, _values, true);
 
         return *this;
     }
 
     std::string QueryBuilder::getQuery()
     {
-        std::string stmt = this->selectStatement + this->tableStatement + this->whereStatement;
-        Logger::writeToLog(Logger::sqlLogLocation.c_str(), stmt.c_str());
-        return this->selectStatement + this->tableStatement + this->whereStatement;
+        std::string stmt = m_selectStatement + m_tableStatement + m_whereStatement;
+        Logger::SQL_Debug(stmt);
+        return m_selectStatement + m_tableStatement + m_whereStatement;
     }
 
     std::vector<std::vector<std::string>> QueryBuilder::fetchAll()
     {
-        std::unique_ptr<sql::Connection> connection = getConnection();
+        std::unique_ptr<sql::Connection> connection = DatabaseConnector::createConnection();
         if(!connection)
         {
-            Logger::writeToLog(Logger::sqlLogLocation.c_str(), "Unable to connect to database");
+            Logger::SQL_Info("Unable to connect to database");
         }
-
-        connection->setSchema("test");
 
         std::unique_ptr<sql::Statement> statement(connection->createStatement());
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery(this->getQuery()));

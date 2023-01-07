@@ -1,9 +1,13 @@
 #include <iostream>
+#include <typeinfo>
+#include <nlohmann/json.hpp>
 #include "../headers/Server.h"
 #include "../headers/System.h"
+#include "../headers/FileHandler.h"
 
 namespace TDA
 {
+    nlohmann::json System::environmentVariables = FileHandler::readJSON("/env.json");
     //setting functions
     void System::errormsg(const char* message)
     {
@@ -25,5 +29,24 @@ namespace TDA
             }
         }
         return true;
+    }
+
+    nlohmann::json System::getEnvironmentVariables(std::vector<std::string>_jsonKeys)
+    {   
+        if(_jsonKeys.size() <= 0)
+        {
+            return environmentVariables;
+        }
+        
+        nlohmann::json resultJson;
+        for(size_t i = 0; i < _jsonKeys.size(); i++)
+        {
+            nlohmann::json::iterator it = environmentVariables.find(_jsonKeys[i]);
+            if(it != environmentVariables.end())
+            {
+                resultJson[_jsonKeys[i]] = it.value();
+            }
+        }
+        return resultJson;
     }
 }

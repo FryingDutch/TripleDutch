@@ -11,30 +11,25 @@ namespace TDA
     class QueryBuilder
     {
         private:
-            sql::Driver *driver;
-            std::string selectStatement;
-            std::string tableStatement;
-            std::string whereStatement;
-            std::string query;
+            std::string m_selectStatement;
+            std::string m_tableStatement;
+            std::string m_whereStatement;
+            std::string m_query;
 
-            uint32_t resultColumnCount;
-
-            enum ERROR_CODES{
-                CANNOT_CONNECT=2003
-            };
+            uint32_t m_resultColumnCount;
             
         private:
-            std::unique_ptr<sql::Connection> getConnection(std::string host = "tcp://db", std::string user = "root", std::string password = "root");
             void clearQuery();
 
         public:
-            QueryBuilder select(std::vector<std::string>columns = std::vector<std::string>());
-            QueryBuilder from(std::string table);
-            QueryBuilder where(std::string _whereStatement, std::vector<std::string> values = {});
+            QueryBuilder select(std::vector<std::string>_columns = std::vector<std::string>());
+            QueryBuilder from(std::string _table);
+            QueryBuilder where(std::string _stmt, std::vector<std::string> _values = {}, bool _isAnd = false);
             std::string getQuery();
             std::vector<std::vector<std::string>> fetchAll();
+            QueryBuilder And(std::string _stmt, std::vector<std::string> _values = {});
 
         public:
-            QueryBuilder(): driver(get_driver_instance()), selectStatement(std::string{""}), tableStatement(std::string{""}), query(std::string{""}), resultColumnCount(int{0}){}
+            QueryBuilder(): m_selectStatement(std::string{""}), m_tableStatement(std::string{""}), m_query(std::string{""}), m_resultColumnCount(int{0}){}
     };
 }

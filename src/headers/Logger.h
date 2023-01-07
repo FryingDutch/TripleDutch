@@ -3,26 +3,29 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include "../headers/FileHandler.h"
 
 namespace TDA
 {
-    struct Logger
+    class Logger : public FileHandler
     {
-    private:
-    	static std::string workDir;
-    	static std::ifstream readFiles;
-    	static std::ofstream writefiles;
+        public:
+            static const std::string logRoot;
+            static const std::string sqlLogLocation;
 
-    public:
-        static const std::string sqlLogLocation;
+        private:
+            static void createLog(std::string _path, std::string _msg = "");
+            static void writeToLog(std::string _path, std::string _msg);
+            static std::string readLog(std::string _name);  
 
-    public:
-    	static void setWorkDir(const char* _path);
-    	static void createLog(const char* _name, const char* _msg = "");
-    	static void copyLog(const char* _sourcePath, const char* _destinationPath);
-    	static std::string readLog(const char* _name);
-    	static void writeToLog(const char* _name, const char* _msg);
-    	static void removeLog(const char* _name);
-        static bool checkLogExistence(const char* _name);
-    }; 
+            static void createLogSQL(std::string _msg = "");
+            static void writeToLogSQL(std::string _msg);
+            static std::string readLogSQL();
+        
+        public:
+            static void SQL_Info(std::string _msg);
+            static void SQL_Warning(std::string _msg);
+            static void SQL_Debug(std::string _msg);
+            static void SQL_Exception(std::string _msg);
+    };
 }
