@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(Tcmalloc)
 find_package(Threads)
 find_package(MySQL)
+find_package(nlohmann_json 3.2.0)
 
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
@@ -48,11 +49,16 @@ endif()
 include_directories( ${OPENSSL_INCLUDE_DIR} )
 include_directories( ${Boost_INCLUDE_DIR} )
 
-set(PROJECT_INCLUDE_DIR
-    ${PROJECT_SOURCE_DIR}/include
+set(PROJECT_CROW_INCLUDE_DIR
+    ${PROJECT_SOURCE_DIR}/crow/include
 )
 
-include_directories("${PROJECT_INCLUDE_DIR}")
+set(PROJECT_JSON_INCLUDE_DIR
+    ${PROJECT_SOURCE_DIR}/json/single_include
+)
+
+include_directories("${PROJECT_CROW_INCLUDE_DIR}")
+include_directories("${PROJECT_JSON_INCLUDE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories(/usr/include/cppconn)
 link_directories(/usr/lib/aarch64-linux-gnu)

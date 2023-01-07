@@ -17,7 +17,8 @@ WORKDIR /TripleDutch
 
 # get crow's include/ dir
 RUN git clone --branch v0.3 https://github.com/CrowCpp/crow crow &&\
-    mv crow/include/ include/ &&\
+    git clone --branch v3.11.2 https://github.com/nlohmann/json.git json &&\
+
 # make a directory we'll use to build
     mkdir build
 
@@ -31,7 +32,8 @@ WORKDIR /TripleDutch/build
 RUN cmake .. &&\
     make
 
-# FROM base AS finalimage
-# COPY --from=builder /TripleDutch/build/src/tdserver /
-# COPY --from=builder /usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
-ENTRYPOINT ["/TripleDutch/build/src/tdserver"]
+FROM base AS finalimage
+COPY --from=builder /TripleDutch/build/src/tdserver /
+COPY --from=builder /TripleDutch/env.json /
+COPY --from=builder /usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
+ENTRYPOINT ["/tdserver"]

@@ -7,7 +7,9 @@ add_executable(tdserver
 		./source/server.cpp
 		./source/queryBuilder.cpp
 		./source/logger.cpp
+		./source/databaseConnector.cpp
 		)
+
 target_link_libraries(tdserver OpenSSL::SSL)
 target_link_libraries(tdserver ${Boost_LIBRARIES})
 target_link_libraries(tdserver ${CMAKE_THREAD_LIBS_INIT})
