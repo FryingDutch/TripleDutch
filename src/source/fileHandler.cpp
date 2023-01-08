@@ -76,7 +76,7 @@ namespace TDA
 			return;
 		}
 
-		std::ofstream writeFile(_path, std::ios_base::app);
+		std::ofstream writeFile(_path, std::ios_base::app | std::ios_base::out);
 
 		if (writeFile)
 		{

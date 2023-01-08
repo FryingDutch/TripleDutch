@@ -1,3 +1,4 @@
+#pragma once
 #include <mutex>
 #include <string>
 #include <nlohmann/json.hpp>

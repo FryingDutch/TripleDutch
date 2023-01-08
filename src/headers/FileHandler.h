@@ -12,9 +12,10 @@ namespace TDA
     protected:
     	static std::string workDir;
 
-    protected:
+    private:
     	static void setWorkDir(const char* _path);
 
+	protected:
 		static std::string readFile(const char* _name);
 		static void createFile(const char* _name, const char* _msg = "");
 		static void writeToFile(const char* _name, const char* _msg);    	

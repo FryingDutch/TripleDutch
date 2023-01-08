@@ -1,3 +1,4 @@
+#pragma once
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -11,7 +12,7 @@ namespace TDA
     class QueryBuilder
     {
         private:
-            std::string m_selectStatement;
+            std::string m_baseStatement;
             std::string m_tableStatement;
             std::string m_whereStatement;
             std::string m_query;
@@ -23,13 +24,17 @@ namespace TDA
 
         public:
             QueryBuilder select(std::vector<std::string>_columns = std::vector<std::string>());
+            QueryBuilder insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values);
+            QueryBuilder Delete();
             QueryBuilder from(std::string _table);
-            QueryBuilder where(std::string _stmt, std::vector<std::string> _values = {}, bool _isAnd = false);
+            QueryBuilder where(std::string _stmt, std::vector<std::string> _values = {}, bool _isOr = false);
+            QueryBuilder And(std::string _stmt, std::vector<std::string> _values = {});
+            QueryBuilder Or(std::string _stmt, std::vector<std::string> _values = {});
             std::string getQuery();
             std::vector<std::vector<std::string>> fetchAll();
-            QueryBuilder And(std::string _stmt, std::vector<std::string> _values = {});
+            void execute();
 
         public:
-            QueryBuilder(): m_selectStatement(std::string{""}), m_tableStatement(std::string{""}), m_query(std::string{""}), m_resultColumnCount(int{0}){}
+            QueryBuilder(): m_baseStatement(std::string{""}), m_tableStatement(std::string{""}), m_query(std::string{""}), m_resultColumnCount(int{0}){}
     };
 }

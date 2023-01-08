@@ -9,6 +9,7 @@ add_executable(tdserver
 		./source/fileHandler.cpp
 		./source/logger.cpp
 		./source/databaseConnector.cpp
+		./source/lock.cpp
 		)
 
 target_link_libraries(tdserver OpenSSL::SSL)

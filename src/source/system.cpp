@@ -33,20 +33,24 @@ namespace TDA
 
     nlohmann::json System::getEnvironmentVariables(std::vector<std::string>_jsonKeys)
     {   
-        if(_jsonKeys.size() <= 0)
-        {
-            return environmentVariables;
-        }
-        
-        nlohmann::json resultJson;
-        for(size_t i = 0; i < _jsonKeys.size(); i++)
-        {
-            nlohmann::json::iterator it = environmentVariables.find(_jsonKeys[i]);
-            if(it != environmentVariables.end())
-            {
-                resultJson[_jsonKeys[i]] = it.value();
-            }
-        }
-        return resultJson;
+        return environmentVariables;
+
+        // TODO: Find a way to return only the key and its value which is requested
+
+        // if(_jsonKeys.size() <= 0)
+        // {
+        //     return environmentVariables;
+        // }
+
+        // nlohmann::json resultJson;
+        // for(size_t i = 0; i < _jsonKeys.size(); i++)
+        // {
+        //     nlohmann::json::iterator it = environmentVariables.find(_jsonKeys[i]);
+        //     if(it != environmentVariables.end())
+        //     {
+        //         resultJson[_jsonKeys[i]] = it.value();
+        //     }
+        // }
+        // return resultJson;
     }
 }
