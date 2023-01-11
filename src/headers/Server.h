@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include "../headers/Lock.h"
+#include "../headers/QueryBuilder.h"
 
 namespace TDA
 {
@@ -20,7 +21,7 @@ namespace TDA
 
 	public:
 		Server();
-		static std::optional<Lock> getLock(std::string _apiKey, std::string _lockName, const double LIFETIME);
+		static std::optional<Lock> getLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder& _queryBuilder);
 		static std::optional<Lock> handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME);
 		static void checkLifetimes();
 		static void updateKeys();
