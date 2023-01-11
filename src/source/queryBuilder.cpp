@@ -28,6 +28,24 @@ namespace TDA
         return *this;
     }
 
+    QueryBuilder QueryBuilder::update(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
+    {
+        this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
+        m_baseStatement = "UPDATE " + _table + " SET ";
+        if(_columns.size() == _values.size())
+        {
+            for(size_t i = 0; i < _columns.size(); i++){
+                m_baseStatement += "`" + _columns[i] + "` = " + (System::isDigit(_values[i]) ? std::string(_values[i]) : ("\'" + _values[i] + "\'")) + ",";
+            }
+
+            if(m_baseStatement.size() > 1 && m_baseStatement[m_baseStatement.size() - 1] == ','){
+                m_baseStatement.pop_back();
+            }
+        }
+
+        return *this;
+    }
+
     QueryBuilder QueryBuilder::select(std::vector<std::string>_columns)
     {
         this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
@@ -56,7 +74,6 @@ namespace TDA
     QueryBuilder QueryBuilder::insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
     {
         this->clearQuery(); // Every insert should define the start of a new query, so we clear all previous entries
-
         m_baseStatement = "INSERT INTO `" + _table + "` (";
         for(size_t i = 0; i < _columns.size(); i++){
             m_baseStatement += _columns[i] + ",";
@@ -73,7 +90,7 @@ namespace TDA
         }
         m_baseStatement += ")";
 
-        Logger::SQL_Info(m_baseStatement);
+        //Logger::SQL_Info(m_baseStatement);
 
         return *this;
     }
@@ -104,12 +121,12 @@ namespace TDA
             }
         }
 
-        if(!_isOr)
+        if(!_isOr){
             m_whereStatement += ((m_whereStatement.size() <= 0) ? " WHERE " : " AND ") + _stmt;
-
-        else
+        } else {
             m_whereStatement += " OR " + _stmt;
-
+        }
+        
         return *this;
     }
 
@@ -128,7 +145,7 @@ namespace TDA
     std::string QueryBuilder::getQuery()
     {
         std::string stmt = m_baseStatement + m_tableStatement + m_whereStatement + ";";
-        Logger::SQL_Info(stmt); 
+        Logger::SQL_Info(stmt);
         return stmt;
     }
 
@@ -174,14 +191,14 @@ namespace TDA
         std::unique_ptr<sql::Connection> connection = DatabaseConnector::createConnection();
         if(!connection)
         {
-            Logger::SQL_Warning("Unable to connect to database");
+            //Logger::SQL_Warning("Unable to connect to database");
         }
 
         std::unique_ptr<sql::Statement> statement(connection->createStatement());
         try{
             statement->executeQuery(this->getQuery());
         } catch (sql::SQLException& exception) {
-            Logger::SQL_Exception(exception.what(), exception.getErrorCode());
+            // Logger::SQL_Exception(exception.what(), exception.getErrorCode());
         }
     }
 }

@@ -20,12 +20,11 @@ namespace TDA
     std::vector<std::string> Server::apiKeys;
     std::mutex Server::storageMutex;
 
-    std::optional<Lock> Server::getLock(std::string _apiKey, std::string _lockName, const double LIFETIME) 
+    std::optional<Lock> Server::getLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder& _queryBuilder) 
     {
         Server::storageMutex.lock();
-        TDA::QueryBuilder qb;
 
-        nlohmann::json results = qb.select().from("all_locks").where("api_key = ?", {_apiKey}).where("lock_name = ?", {_lockName}).fetchAll();
+        nlohmann::json results = _queryBuilder.select().from("all_locks").where("api_key = ?", {_apiKey}).where("lock_name = ?", {_lockName}).fetchAll();
         Logger::SQL_Info(results.dump());   
 
         std::optional<Lock> _lock;
@@ -39,11 +38,12 @@ namespace TDA
 
     std::optional<Lock> Server::handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME)
     {
+        TDA::QueryBuilder qb;
         auto startTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> difference;
         for (;;)
         {
-            std::optional<Lock> lock = Server::getLock(_apiKey, _lockName, LIFETIME);
+            std::optional<Lock> lock = Server::getLock(_apiKey, _lockName, LIFETIME, qb);
             auto currentTime = std::chrono::high_resolution_clock::now();
             difference = currentTime - startTime;
 
@@ -188,13 +188,13 @@ namespace TDA
                 strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
                 std::string validUntill(buffer);
                 values.push_back(validUntill);
-                Logger::General_Info(validUntill);
 
                 std::vector<std::string>columns{"api_key", "lock_name", "session_token", "valid_untill"};
 
                 try{
                     if(resultJson["lockacquired"]){
                         TDA::QueryBuilder qb;
+                        std::string apiTable = "api_keys";
                         qb.insert("all_locks", columns, values).execute();
                     }
                     resultJson["status"] = "ok";
@@ -220,11 +220,34 @@ namespace TDA
             });
 
         // Releasing the lock
-        CROW_ROUTE(app, "/releaselock").methods("DELETE"_method)
+        CROW_ROUTE(app, "/releaselock")
             ([&](const crow::request& req) {
-                crow::json::wvalue x;
-                x["servername"] = "Helo world!";
-                return crow::response(200, x);
+
+            std::string session_token, userApiKey, lockName;      
+            nlohmann::json resultJson;
+            uint32_t responseCode = 0;
+
+            resultJson["status"] = "ok";
+            if (req.url_params.get("auth") == nullptr || req.url_params.get("token") == nullptr){
+                resultJson["status"] = "no api key";
+                responseCode = 400;
+                return crow::response(responseCode, resultJson.dump());
+            }
+
+            if (req.url_params.get("lockname") == nullptr){
+                resultJson["error"] = "no lockname supplied";                
+                responseCode = 400;
+                return crow::response(responseCode, resultJson.dump());
+            }
+
+            userApiKey = req.url_params.get("auth");
+            session_token = req.url_params.get("token");
+            lockName = req.url_params.get("lockname");
+
+            TDA::QueryBuilder qb;
+            qb.Delete().from("all_locks").where("lock_name = ?", {lockName}).And("api_key = ?", {userApiKey}).And("session_token = ?", {session_token}).execute();
+
+            return crow::response(200, resultJson.dump());
         });
 
         std::thread _lifeTime_thread(&Server::checkLifetimes);
