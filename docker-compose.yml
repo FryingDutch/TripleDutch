@@ -22,7 +22,7 @@ services:
     ports:
       - 8081:80
   td_server:
-    build: .
+    image: fryingdutch/resourcelock:latest
     container_name: tripledutch
     restart: unless-stopped
     ports: 
