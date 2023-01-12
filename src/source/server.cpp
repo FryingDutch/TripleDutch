@@ -94,7 +94,7 @@ namespace TDA
 
                 if(!ApiKeyIsValid)
                 {
-                    resultJson["status"] = "not a valid API key";
+                    resultJson["status"] = "invalid API key";
                     responseCode = 403;
                     return crow::response(responseCode, resultJson.dump());
                 }
@@ -144,7 +144,25 @@ namespace TDA
                     responseCode = 400;
                     return crow::response(responseCode, resultJson.dump());
                 }
-                std::string apiKey = req.url_params.get("auth");
+                std::string userApiKey = req.url_params.get("auth");
+
+                bool ApiKeyIsValid = false;
+                for(size_t i = 0; i < Server::apiKeys.size(); i++)
+                {
+                    if(Server::apiKeys[i] == userApiKey)
+                    {
+                        ApiKeyIsValid = true;
+                        break;
+                    }
+                }
+
+                if(!ApiKeyIsValid)
+                {
+                    resultJson["status"] = "invalid API key";
+                    responseCode = 403;
+                    return crow::response(responseCode, resultJson.dump());
+                }
+
                 values.push_back(req.url_params.get("auth"));
 
                 if (req.url_params.get("lockname") == nullptr){
@@ -173,7 +191,7 @@ namespace TDA
                     timeout = 0.0f;
                 }
 
-                std::optional<Lock> _lock = Server::handleRequest(apiKey, lockName, timeout, lifetime);
+                std::optional<Lock> _lock = Server::handleRequest(userApiKey, lockName, timeout, lifetime);
 
                 resultJson["sessiontoken"] = _lock ? _lock.value().m_getSessionToken() : "";
                 resultJson["lockacquired"] = _lock ? true : false;
@@ -229,8 +247,27 @@ namespace TDA
 
             resultJson["status"] = "ok";
             if (req.url_params.get("auth") == nullptr || req.url_params.get("token") == nullptr){
-                resultJson["status"] = "no api key";
+                resultJson["status"] = "invalid API key";
                 responseCode = 400;
+                return crow::response(responseCode, resultJson.dump());
+            }
+
+            userApiKey = req.url_params.get("auth");
+
+            bool ApiKeyIsValid = false;
+            for(size_t i = 0; i < Server::apiKeys.size(); i++)
+            {
+                if(Server::apiKeys[i] == userApiKey)
+                {
+                    ApiKeyIsValid = true;
+                    break;
+                }
+            }
+
+            if(!ApiKeyIsValid)
+            {
+                resultJson["status"] = "invalid API key";
+                responseCode = 403;
                 return crow::response(responseCode, resultJson.dump());
             }
 
