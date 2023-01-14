@@ -23,7 +23,7 @@ namespace TDA
 			newLog.close();
 		}
 		else 
-	        std::cerr << "Error creating log\n";
+	        std::cerr << "Error creating log at: " << _path << "\n";
 	}
 
 	void FileHandler::copyFile(const char* _sourcePath, const char* _destinationPath)
@@ -44,7 +44,7 @@ namespace TDA
 			currentFile.close();
 		}
 	    	else 
-	            std::cerr << "Error copying log\n";
+	            std::cerr << "Error copying log at: " << _sourcePath << "\n";
 	}
 
 	std::string FileHandler::readFile(const char* _name)

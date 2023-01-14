@@ -28,12 +28,15 @@ COPY ./ ./
 
 #build
 WORKDIR /TripleDutch/build
-# ENTRYPOINT ["/bin/bash"]
+#ENTRYPOINT ["/bin/bash"]
 RUN cmake .. &&\
-    make
+    make &&\
+    mkdir /linkers &&\
+    find / -name "*sqlcppconn.so*" -exec cp {} /linkers \;
 
 FROM base AS finalimage
 COPY --from=builder /TripleDutch/build/src/tdserver /
 COPY --from=builder /TripleDutch/env.json /
 COPY --from=builder /usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
+COPY --from=builder /linkers /
 ENTRYPOINT ["/tdserver"]
