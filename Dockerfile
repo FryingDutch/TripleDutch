@@ -28,7 +28,6 @@ COPY ./ ./
 
 #build
 WORKDIR /TripleDutch/build
-#ENTRYPOINT ["/bin/bash"]
 RUN cmake .. &&\
     make &&\
     mkdir /linkers &&\
