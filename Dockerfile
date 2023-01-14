@@ -32,11 +32,13 @@ WORKDIR /TripleDutch/build
 RUN cmake .. &&\
     make &&\
     mkdir /linkers &&\
-    find / -name "*sqlcppconn.so*" -exec cp {} /linkers \;
+    find / -name "*sqlcppconn.so*" -exec cp {} /linkers \; &&\
+    find / -name "libmysqlclient.so*" -exec cp {} /linkers \;
 
 FROM base AS finalimage
 COPY --from=builder /TripleDutch/build/src/tdserver /
 COPY --from=builder /TripleDutch/env.json /
-COPY --from=builder /usr/lib/aarch64-linux-gnu /usr/lib/aarch64-linux-gnu
-COPY --from=builder /linkers /
-ENTRYPOINT ["/tdserver"]
+COPY --from=builder /linkers /linkers
+RUN mkdir /logs &&\
+    ldconfig /linkers
+ENTRYPOINT ["/tdserver","-L/linkers"]
