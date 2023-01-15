@@ -5,8 +5,8 @@ services:
     image: mysql:8.0
     container_name: db
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
+    # environment:
+    #   MYSQL_ROOT_PASSWORD: **** <-- do not put in version control 
     volumes:
       - db:/var/lib/mysql
     ports:
@@ -22,7 +22,8 @@ services:
     ports:
       - 8081:80
   td_server:
-    image: fryingdutch/resourcelock:latest
+#    image: fryingdutch/resourcelock:latest
+    build: .
     container_name: tripledutch
     restart: unless-stopped
     ports: 
