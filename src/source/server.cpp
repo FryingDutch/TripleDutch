@@ -290,12 +290,11 @@ namespace TDA
         std::thread _lifeTime_thread(&Server::checkLifetimes);
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
-        app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"]);
         Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
 
         try{
-            app.run();
+            app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
             std::cerr << ex.what();
             Logger::SQL_Exception(ex.what());
@@ -306,6 +305,8 @@ namespace TDA
             std::cerr << ex.what() << std::endl;
             Logger::SQL_Exception(ex.what());
         }
+
+        app.run();
 
         _lifeTime_thread.join();
         _apiKey_update_thread.join();
