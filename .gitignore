@@ -1,3 +1,3 @@
 .vs*
 *DS_Store
-env.json
+*env.json
