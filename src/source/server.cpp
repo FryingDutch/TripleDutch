@@ -64,7 +64,7 @@ namespace TDA
     {
         crow::SimpleApp app;
 
-        CROW_ROUTE(app, "/status")
+        CROW_ROUTE(app, "/status").methods("GET"_method, "POST"_method)
             ([&](const crow::request& req) 
             {
                 TDA::QueryBuilder qb;
@@ -128,7 +128,7 @@ namespace TDA
                 return crow::response(responseCode, resultJson.dump());
         });
 
-        CROW_ROUTE(app, "/getlock")
+        CROW_ROUTE(app, "/getlock").methods("POST"_method)
             ([&](const crow::request& req)
             {
 
@@ -238,7 +238,7 @@ namespace TDA
             });
 
         // Releasing the lock
-        CROW_ROUTE(app, "/releaselock")
+        CROW_ROUTE(app, "/releaselock").methods("DELETE"_method)
             ([&](const crow::request& req) {
 
             std::string session_token, userApiKey, lockName;      
@@ -290,9 +290,6 @@ namespace TDA
         std::thread _lifeTime_thread(&Server::checkLifetimes);
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
-        Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"]);
-        Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
-
         try{
             app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
@@ -301,9 +298,8 @@ namespace TDA
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
             Logger::SQL_Exception(ex.what());
-        } catch (const std::exception& ex) {
-            std::cerr << ex.what() << std::endl;
-            Logger::SQL_Exception(ex.what());
+        } catch (...) {
+            Logger::SQL_Exception("Unknown error during crow configuration");
         }
 
         app.run();
