@@ -297,7 +297,8 @@ namespace TDA
         } catch (boost::wrapexcept<boost::system::system_error>& error) {
             std::cerr << error.what();
             Logger::General_Info(error.what());
-            Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"] + " " + System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"])
+            Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"]);
+            Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         }
 
         _lifeTime_thread.join();
