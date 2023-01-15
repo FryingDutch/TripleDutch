@@ -293,15 +293,15 @@ namespace TDA
         app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"]);
         Logger::General_Info(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
-        
+
         try{
             app.run();
         } catch (boost::wrapexcept<boost::system::system_error>& error) {
             std::cerr << error.what();
             Logger::General_Info(error.what());
         } catch (const std::exception& ex) {
-            DDserver::errormsg("An error has occurred. ");
             std::cerr << ex.what() << std::endl;
+            Logger::General_Info(error.what());
         }
 
         _lifeTime_thread.join();
