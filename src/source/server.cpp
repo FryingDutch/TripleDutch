@@ -296,12 +296,12 @@ namespace TDA
 
         try{
             app.run();
-        } catch (boost::wrapexcept<boost::system::system_error>& error) {
-            std::cerr << error.what();
-            Logger::General_Info(error.what());
+        } catch (boost::wrapexcept<boost::system::system_error>& ex) {
+            std::cerr << ex.what();
+            Logger::General_Info(ex.what());
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
-            Logger::General_Info(error.what());
+            Logger::General_Info(ex.what());
         }
 
         _lifeTime_thread.join();
