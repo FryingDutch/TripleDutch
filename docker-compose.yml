@@ -27,7 +27,7 @@ services:
     container_name: tripledutch
     restart: unless-stopped
     ports: 
-      - "8001:8001"
+      - "44300:44300"
     depends_on:
       - phpma
     links:
