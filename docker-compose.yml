@@ -42,7 +42,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-data:/var/cache/nginx
-      - /etc/ssl/certs:/etc/ssl/certs
+      - ./ssl-certs:/ssl-certs
     links:
       - td_server
     restart: always

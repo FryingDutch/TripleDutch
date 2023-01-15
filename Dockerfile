@@ -38,6 +38,6 @@ FROM base AS finalimage
 COPY --from=builder /TripleDutch/build/src/tdserver /
 COPY --from=builder /TripleDutch/env.json /
 COPY --from=builder /linkers /linkers
-RUN mkdir /logs &&\
+RUN mkdir /logs /ssl-certs &&\
     ldconfig /linkers
 ENTRYPOINT ["/tdserver","-L/linkers"]
