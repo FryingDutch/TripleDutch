@@ -298,10 +298,13 @@ namespace TDA
             app.run();
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
             std::cerr << ex.what();
-            Logger::General_Info(ex.what());
+            Logger::SQL_Exception(ex.what());
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
-            Logger::General_Info(ex.what());
+            Logger::SQL_Exception(ex.what());
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
+            Logger::SQL_Exception(ex.what());
         }
 
         _lifeTime_thread.join();
