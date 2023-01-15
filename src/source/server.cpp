@@ -290,7 +290,7 @@ namespace TDA
         std::thread _lifeTime_thread(&Server::checkLifetimes);
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
-        app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]);
+        app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).app.ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         app.run();
 
         _lifeTime_thread.join();
