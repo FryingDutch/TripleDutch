@@ -20,15 +20,15 @@ namespace TDA
         m_query = "";
     }
 
-    QueryBuilder QueryBuilder::Delete()
+    QueryBuilder* QueryBuilder::Delete()
     {
         this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
         m_baseStatement = "DELETE";
 
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::update(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
+    QueryBuilder* QueryBuilder::update(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
     {
         this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
         m_baseStatement = "UPDATE " + _table + " SET ";
@@ -43,10 +43,10 @@ namespace TDA
             }
         }
 
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::select(std::vector<std::string>_columns)
+    QueryBuilder* QueryBuilder::select(std::vector<std::string>_columns)
     {
         this->clearQuery(); // Every select should define the start of a new query, so we clear all previous entries
         m_baseStatement = "SELECT ";
@@ -55,7 +55,7 @@ namespace TDA
         if(numOfColumns == 0)
         {
             m_baseStatement += "* ";
-            return *this;
+            return this;
         };
 
         for(size_t i = 0; i < numOfColumns; i++)
@@ -68,10 +68,10 @@ namespace TDA
             m_baseStatement.pop_back();
         }
 
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
+    QueryBuilder* QueryBuilder::insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values)
     {
         this->clearQuery(); // Every insert should define the start of a new query, so we clear all previous entries
         m_baseStatement = "INSERT INTO `" + _table + "` (";
@@ -89,17 +89,17 @@ namespace TDA
             m_baseStatement.pop_back();
         }
         m_baseStatement += ")";
-        
-        return *this;
+
+        return this;
     }
 
-    QueryBuilder QueryBuilder::from(std::string _table)
+    QueryBuilder* QueryBuilder::from(std::string _table)
     {
         m_tableStatement = " FROM `" + _table + "`";
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::where(std::string _stmt, std::vector<std::string> _values, bool _isOr)
+    QueryBuilder* QueryBuilder::where(std::string _stmt, std::vector<std::string> _values, bool _isOr)
     {
         if(_values.size() > 0)
         {
@@ -125,25 +125,24 @@ namespace TDA
             m_whereStatement += " OR " + _stmt;
         }
         
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::And(std::string _stmt, std::vector<std::string> _values)
+    QueryBuilder* QueryBuilder::And(std::string _stmt, std::vector<std::string> _values)
     {
         this->where(_stmt, _values, false);
-        return *this;
+        return this;
     }
 
-    QueryBuilder QueryBuilder::Or(std::string _stmt, std::vector<std::string> _values)
+    QueryBuilder* QueryBuilder::Or(std::string _stmt, std::vector<std::string> _values)
     {
         this->where(_stmt, _values, true);
-        return *this;
+        return this;
     }
 
     std::string QueryBuilder::getQuery()
     {
         std::string stmt = m_baseStatement + m_tableStatement + m_whereStatement + ";";
-        Logger::SQL_Info(stmt);
         return stmt;
     }
 

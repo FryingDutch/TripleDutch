@@ -22,14 +22,14 @@ namespace TDA
             void clearQuery();
 
         public:
-            QueryBuilder select(std::vector<std::string>_columns = std::vector<std::string>());
-            QueryBuilder insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values);
-            QueryBuilder update(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values);
-            QueryBuilder Delete();
-            QueryBuilder from(std::string _table);
-            QueryBuilder where(std::string _stmt, std::vector<std::string> _values = {}, bool _isOr = false);
-            QueryBuilder And(std::string _stmt, std::vector<std::string> _values = {});
-            QueryBuilder Or(std::string _stmt, std::vector<std::string> _values = {});
+            QueryBuilder* select(std::vector<std::string>_columns = std::vector<std::string>());
+            QueryBuilder* insert(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values);
+            QueryBuilder* update(std::string _table, std::vector<std::string> _columns, std::vector<std::string> _values);
+            QueryBuilder* Delete();
+            QueryBuilder* from(std::string _table);
+            QueryBuilder* where(std::string _stmt, std::vector<std::string> _values = {}, bool _isOr = false);
+            QueryBuilder* And(std::string _stmt, std::vector<std::string> _values = {});
+            QueryBuilder* Or(std::string _stmt, std::vector<std::string> _values = {});
             std::string getQuery();
             std::vector<std::vector<std::string>> fetchAll();
             void execute();

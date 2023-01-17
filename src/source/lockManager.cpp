@@ -10,11 +10,11 @@ namespace TDA
     std::vector<Lock> LockManager::allLocks;
     std::mutex LockManager::storageMutex;
 
-    std::optional<Lock> LockManager::createNewLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder& _queryBuilder) 
+    std::optional<Lock> LockManager::createNewLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder* _queryBuilder) 
     {
         LockManager::storageMutex.lock();
 
-        nlohmann::json results = _queryBuilder.select().from("all_locks").where("api_key = ?", {_apiKey}).where("lock_name = ?", {_lockName}).fetchAll();
+        nlohmann::json results = _queryBuilder->select()->from("all_locks")->where("api_key = ?", {_apiKey})->where("lock_name = ?", {_lockName})->fetchAll();
 
         std::optional<Lock> _lock;
         if (results.empty()) {
@@ -27,7 +27,7 @@ namespace TDA
 
     void LockManager::checkLifetimes()
     {
-        TDA::QueryBuilder qb;
+        std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
 
         for(;;)
         {
@@ -38,7 +38,7 @@ namespace TDA
             strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
             std::string currentTimeStamp(buffer);
 
-            qb.Delete().from("all_locks").where("valid_untill < ?", {currentTimeStamp}).execute();
+            p_queryBuilder->Delete()->from("all_locks")->where("valid_untill < ?", {currentTimeStamp})->execute();
         }
     }
 }

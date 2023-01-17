@@ -26,7 +26,7 @@ namespace TDA
         std::chrono::duration<double> difference;
         for (;;)
         {
-            std::optional<Lock> lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, qb);
+            std::optional<Lock> lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, &qb);
             auto currentTime = std::chrono::high_resolution_clock::now();
             difference = currentTime - startTime;
 
@@ -40,7 +40,7 @@ namespace TDA
     void Server::init()
     {
         TDA::QueryBuilder qb;
-        qb.select().from("all_locks");
+        qb.select()->from("all_locks");
     }
 
     void Server::startup()
@@ -50,8 +50,6 @@ namespace TDA
         CROW_ROUTE(app, "/status").methods("GET"_method, "POST"_method)
             ([&](const crow::request& req) 
             {
-                TDA::QueryBuilder qb;
-
                 nlohmann::json resultJson;
                 resultJson["status"] = "unknown";
                 uint32_t responseCode = 200;
@@ -86,11 +84,12 @@ namespace TDA
                 resultJson["locks"] = nlohmann::json{};
 
                 try{
+                    std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
                     static std::vector<std::string>columns{"api_key", "lock_name", "session_token"};
                     static std::string table = "all_locks";
                     static std::string whereStatement = "api_key = ?";
 
-                    resultJson["locks"] = qb.select(columns).from(table).where(whereStatement, {userApiKey}).fetchAll();
+                    resultJson["locks"] = p_queryBuilder->select(columns)->from(table)->where(whereStatement, {userApiKey})->fetchAll();
                     resultJson["status"] = "ok";
                     resultJson["error"] = "";
                     responseCode = 200;
@@ -194,9 +193,9 @@ namespace TDA
 
                 try{
                     if(resultJson["lockacquired"]){
-                        TDA::QueryBuilder qb;
+                        std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
                         std::string apiTable = "api_keys";
-                        qb.insert("all_locks", columns, values).execute();
+                        p_queryBuilder->insert("all_locks", columns, values)->execute();
                     }
                     resultJson["status"] = "ok";
                     responseCode = 200;
@@ -264,8 +263,8 @@ namespace TDA
             session_token = req.url_params.get("token");
             lockName = req.url_params.get("lockname");
 
-            TDA::QueryBuilder qb;
-            qb.Delete().from("all_locks").where("lock_name = ?", {lockName}).And("api_key = ?", {userApiKey}).And("session_token = ?", {session_token}).execute();
+            std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
+            p_queryBuilder->Delete()->from("all_locks")->where("lock_name = ?", {lockName})->And("api_key = ?", {userApiKey})->And("session_token = ?", {session_token})->execute();
 
             return crow::response(200, resultJson.dump());
         });
@@ -293,13 +292,13 @@ namespace TDA
 
     void Server::updateKeys()
     {
-        TDA::QueryBuilder qb;
+        std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
         std::vector<std::vector<std::string>> query_result;
         std::vector<std::string> all_keys;
 
         for(;;)
         {
-            query_result = qb.select({"value"}).from("api_keys").fetchAll();
+            query_result = p_queryBuilder->select({"value"})->from("api_keys")->fetchAll();
             all_keys = {};
             
             for(size_t i = 0; i < query_result.size(); i++)
