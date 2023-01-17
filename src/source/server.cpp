@@ -21,17 +21,22 @@ namespace TDA
 
     std::optional<Lock> Server::handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME)
     {
-        TDA::QueryBuilder qb;
+        TDA::QueryBuilder* p_queryBuilder = new TDA::QueryBuilder;
         auto startTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> difference;
+        std::optional<Lock> lock;
+        std::chrono::time_point<std::chrono::high_resolution_clock> currentTime;
+
         for (;;)
         {
-            std::optional<Lock> lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, &qb);
-            auto currentTime = std::chrono::high_resolution_clock::now();
+            lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, p_queryBuilder);
+            currentTime = std::chrono::high_resolution_clock::now();
             difference = currentTime - startTime;
 
-            if (lock || difference.count() > TIMEOUT) 
+            if (lock || difference.count() > TIMEOUT){
+                delete p_queryBuilder;
                 return lock;
+            }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -221,9 +226,7 @@ namespace TDA
 
         // Releasing the lock
         CROW_ROUTE(app, "/releaselock").methods("DELETE"_method)
-            ([&](const crow::request& req) {
-
-            std::string session_token, userApiKey, lockName;      
+            ([&](const crow::request& req) {     
             nlohmann::json resultJson;
             uint32_t responseCode = 0;
 
@@ -234,8 +237,7 @@ namespace TDA
                 return crow::response(responseCode, resultJson.dump());
             }
 
-            userApiKey = req.url_params.get("auth");
-
+            std::string userApiKey{req.url_params.get("auth")};
             bool ApiKeyIsValid = false;
             for(size_t i = 0; i < Server::apiKeys.size(); i++)
             {
@@ -259,9 +261,8 @@ namespace TDA
                 return crow::response(responseCode, resultJson.dump());
             }
 
-            userApiKey = req.url_params.get("auth");
-            session_token = req.url_params.get("token");
-            lockName = req.url_params.get("lockname");
+            std::string session_token{req.url_params.get("token")};
+            std::string lockName{req.url_params.get("lockname")};
 
             std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
             p_queryBuilder->Delete()->from("all_locks")->where("lock_name = ?", {lockName})->And("api_key = ?", {userApiKey})->And("session_token = ?", {session_token})->execute();
