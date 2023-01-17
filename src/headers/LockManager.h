@@ -14,5 +14,6 @@ namespace TDA
 
     public:
         static std::optional<Lock> createNewLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder& _queryBuilder);
+        static void checkLifetimes();
     };
 }

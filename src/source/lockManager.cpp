@@ -3,6 +3,7 @@
 #include "../headers/QueryBuilder.h"
 #include <optional>
 #include <nlohmann/json.hpp>
+#include <thread>
 
 namespace TDA
 {
@@ -22,5 +23,22 @@ namespace TDA
         }
         LockManager::storageMutex.unlock();
         return _lock;
+    }
+
+    void LockManager::checkLifetimes()
+    {
+        TDA::QueryBuilder qb;
+
+        for(;;)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            time_t now = time(0);
+            struct tm* time_info = localtime(&now);
+            char buffer[26];
+            strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
+            std::string currentTimeStamp(buffer);
+
+            qb.Delete().from("all_locks").where("valid_untill < ?", {currentTimeStamp}).execute();
+        }
     }
 }

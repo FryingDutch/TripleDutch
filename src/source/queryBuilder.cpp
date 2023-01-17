@@ -89,9 +89,7 @@ namespace TDA
             m_baseStatement.pop_back();
         }
         m_baseStatement += ")";
-
-        //Logger::SQL_Info(m_baseStatement);
-
+        
         return *this;
     }
 
@@ -191,14 +189,14 @@ namespace TDA
         std::unique_ptr<sql::Connection> connection = DatabaseConnector::createConnection();
         if(!connection)
         {
-            //Logger::SQL_Warning("Unable to connect to database");
+            Logger::SQL_Warning("Unable to connect to database");
         }
 
         std::unique_ptr<sql::Statement> statement(connection->createStatement());
         try{
             statement->executeQuery(this->getQuery());
         } catch (sql::SQLException& exception) {
-            // Logger::SQL_Exception(exception.what(), exception.getErrorCode());
+            Logger::SQL_Exception(exception.what(), exception.getErrorCode());
         }
     }
 }

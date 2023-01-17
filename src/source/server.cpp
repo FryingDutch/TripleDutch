@@ -270,42 +270,25 @@ namespace TDA
             return crow::response(200, resultJson.dump());
         });
 
-        std::thread _lifeTime_thread(&Server::checkLifetimes);
+        std::thread _lifeTime_thread(&LockManager::checkLifetimes);
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
         try{
             app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
             std::cerr << ex.what();
-            Logger::SQL_Exception(ex.what());
+            Logger::General_Exception(ex.what());
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
-            Logger::SQL_Exception(ex.what());
+            Logger::General_Exception(ex.what());
         } catch (...) {
-            Logger::SQL_Exception("Unknown error during crow configuration");
+            Logger::General_Exception("Unknown error during crow configuration");
         }
 
         app.run();
 
         _lifeTime_thread.join();
         _apiKey_update_thread.join();
-    }
-
-    void Server::checkLifetimes()
-    {
-        TDA::QueryBuilder qb;
-
-        for(;;)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            time_t now = time(0);
-            struct tm* time_info = localtime(&now);
-            char buffer[26];
-            strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
-            std::string currentTimeStamp(buffer);
-
-            qb.Delete().from("all_locks").where("valid_untill < ?", {currentTimeStamp}).execute();
-        }
     }
 
     void Server::updateKeys()
