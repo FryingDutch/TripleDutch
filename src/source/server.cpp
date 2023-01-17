@@ -13,28 +13,11 @@
 #include "../headers/QueryBuilder.h"
 #include "../headers/Logger.h"
 #include "../headers/Server.h"
+#include "../headers/LockManager.h"
 
 namespace TDA
 {
-    std::vector<Lock> Server::lockVector;
     std::vector<std::string> Server::apiKeys;
-    std::mutex Server::storageMutex;
-
-    std::optional<Lock> Server::getLock(std::string _apiKey, std::string _lockName, const double LIFETIME, TDA::QueryBuilder& _queryBuilder) 
-    {
-        Server::storageMutex.lock();
-
-        nlohmann::json results = _queryBuilder.select().from("all_locks").where("api_key = ?", {_apiKey}).where("lock_name = ?", {_lockName}).fetchAll();
-        Logger::SQL_Info(results.dump());   
-
-        std::optional<Lock> _lock;
-        if (results.empty()) {
-            _lock = Lock(_apiKey, _lockName, LIFETIME);
-            Server::lockVector.push_back(_lock.value());
-        }
-        Server::storageMutex.unlock();
-        return _lock;
-    }
 
     std::optional<Lock> Server::handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME)
     {
@@ -43,14 +26,14 @@ namespace TDA
         std::chrono::duration<double> difference;
         for (;;)
         {
-            std::optional<Lock> lock = Server::getLock(_apiKey, _lockName, LIFETIME, qb);
+            std::optional<Lock> lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, qb);
             auto currentTime = std::chrono::high_resolution_clock::now();
             difference = currentTime - startTime;
 
             if (lock || difference.count() > TIMEOUT) 
                 return lock;
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
 
