@@ -16,14 +16,14 @@ namespace TDA
         std::chrono::_V2::system_clock::time_point m_start;
 
     private:
-        std::string m_createToken();
+        std::string createToken();
 
     public:
         Lock(std::string _apiKey, std::string _name, double _lifeTime);
-        bool m_expired();
-        double m_timeLeft();
+        bool expired();
+        double timeLeft();
         std::string getApiKey();
         std::string getName();
-        std::string m_getSessionToken();
+        std::string getSessionToken();
     };
 }

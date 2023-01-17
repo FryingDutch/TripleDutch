@@ -175,7 +175,7 @@ namespace TDA
 
                 std::optional<Lock> _lock = Server::handleRequest(userApiKey, lockName, timeout, lifetime);
 
-                resultJson["sessiontoken"] = _lock ? _lock.value().m_getSessionToken() : "";
+                resultJson["sessiontoken"] = _lock ? _lock.value().getSessionToken() : "";
                 resultJson["lockacquired"] = _lock ? true : false;
                 resultJson["lockname"] = _lock ? _lock.value().getName() : "";
                 
@@ -194,7 +194,7 @@ namespace TDA
                 try{
                     if(resultJson["lockacquired"]){
                         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
-                        std::string apiTable = "api_keys";
+                        std::string apiTable{"api_keys"};
                         p_queryBuilder->insert("all_locks", columns, values)->execute();
                     }
                     resultJson["status"] = "ok";

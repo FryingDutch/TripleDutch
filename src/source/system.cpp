@@ -31,11 +31,10 @@ namespace TDA
         return true;
     }
 
+    // TODO: Find a way to return only the key and its value which is requested
     nlohmann::json System::getEnvironmentVariables(std::vector<std::string>_jsonKeys)
     {   
         return environmentVariables;
-
-        // TODO: Find a way to return only the key and its value which is requested
 
         // if(_jsonKeys.size() <= 0)
         // {
