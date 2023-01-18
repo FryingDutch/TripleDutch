@@ -19,7 +19,7 @@ namespace TDA
         std::optional<Lock> lock;
         if (results.empty()) {
             lock = Lock(_apiKey, _lockName, _LIFETIME);
-            LockManager::allLocks.push_back(_lock.value());
+            LockManager::allLocks.push_back(lock.value());
         }
         LockManager::storageMutex.unlock();
         return lock;
