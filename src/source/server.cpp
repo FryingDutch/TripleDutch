@@ -274,7 +274,7 @@ namespace TDA
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
         try{
-            app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]);//.ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
+            app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
             std::cerr << ex.what();
             Logger::General_Exception(ex.what());
