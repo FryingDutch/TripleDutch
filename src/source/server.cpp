@@ -72,7 +72,7 @@ namespace TDA
 
             lock.setLifeTime(difference);
             TDA::LockManager::allLocks.push_back(lock);
-            Logger::General_Debug(std::to_string(validUntill));
+            Logger::General_Debug(std::to_string(validUntill) + " " + std::to_string(now));
         }
 
         startup();
