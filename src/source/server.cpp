@@ -8,6 +8,7 @@
 #include <thread>
 #include <optional>
 #include <nlohmann/json.hpp>
+#include <sstream>
 #include "../headers/System.h"
 #include "../headers/Lock.h"
 #include "../headers/QueryBuilder.h"
@@ -60,8 +61,10 @@ namespace TDA
             lock.setSessionToken(allLocks[i][SESSION_TOKEN]);
 
             std::string timestamp = allLocks[i][VALID_UNTILL];
-            std::tm tm_timeStamp;
-            strptime(timestamp.c_str(), "%Y-%m-%d %H:%M:%S", &tm_timeStamp);
+            std::istringstream ss(timestamp);
+
+            std::tm tm_timeStamp = {};
+            ss >> std::get_time(&tm_timeStamp, "%Y-%m-%d %H:%M:%S");
             time_t validUntill = mktime(&tm_timeStamp);
 
             time_t now = time(0);
