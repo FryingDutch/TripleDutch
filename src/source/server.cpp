@@ -65,7 +65,7 @@ namespace TDA
             time_t validUntill = mktime(&tm_timeStamp);
 
             time_t now = time(0);
-            double difference = difftime(now, validUntill);
+            double difference = difftime(validUntill, now);
 
             lock.setLifeTime(difference);
             TDA::LockManager::allLocks.push_back(lock);
