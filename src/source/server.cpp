@@ -45,8 +45,25 @@ namespace TDA
     void Server::init()
     {
         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
-        nlohmann::json locks = p_queryBuilder->select()->from("all_locks")->fetchAll();
-        Logger::General_Debug(locks.dump());
+        std::vector<std::vector<std::string>> allLocks = p_queryBuilder->select()->from("all_locks")->fetchAll();
+
+        TDA::Lock lock;
+        enum {
+            ID = 0, API_KEY, LOCK_NAME, SESSION_TOKEN, VALID_UNTILL
+        };
+
+        for(size_t i = 0; i < allLocks.size(); i++)
+        {
+            lock.setId(std::stoi(allLocks[i][ID]));
+            lock.setApiKey(allLocks[i][API_KEY]);
+            lock.setName(allLocks[i][LOCK_NAME]);
+            lock.setSessionToken(allLocks[i][SESSION_TOKEN]);
+            lock.setLifeTime(100);
+            TDA::LockManager::allLocks.push_back(lock);
+        }
+
+        std::string debug = allLocks.size() + ": size";
+        Logger::General_Debug(debug);
         startup();
     }
 

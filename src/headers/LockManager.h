@@ -8,7 +8,7 @@ namespace TDA
 {
     class LockManager
     {
-    private:
+    public:
 		static std::vector<Lock> allLocks;
         static std::mutex storageMutex;
 
