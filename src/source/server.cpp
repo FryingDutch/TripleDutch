@@ -53,17 +53,25 @@ namespace TDA
         };
 
         for(size_t i = 0; i < allLocks.size(); i++)
-        {
+        {  
             lock.setId(std::stoi(allLocks[i][ID]));
             lock.setApiKey(allLocks[i][API_KEY]);
             lock.setName(allLocks[i][LOCK_NAME]);
             lock.setSessionToken(allLocks[i][SESSION_TOKEN]);
-            lock.setLifeTime(100);
+
+            std::string timestamp = allLocks[i][VALID_UNTILL];
+            std::tm tm_timeStamp;
+            strptime(timestamp.c_str(), "%Y-%m-%d %H:%M:%S", &tm_timeStamp);
+            time_t validUntill = mktime(&tm_timeStamp);
+
+            time_t now = time(0);
+            double difference = difftime(now, validUntill);
+
+            lock.setLifeTime(difference);
             TDA::LockManager::allLocks.push_back(lock);
+            Logger::General_Debug(std::to_string(lock.timeLeft()));
         }
 
-        std::string debug = "size: " + std::to_string(allLocks.size());
-        Logger::General_Debug(debug);
         startup();
     }
 
@@ -71,7 +79,7 @@ namespace TDA
     {
         crow::SimpleApp app;
 
-        CROW_ROUTE(app, "/status").methods("GET"_method, "POST"_method)
+        CROW_ROUTE(app, "/api/status").methods("GET"_method, "POST"_method)
             ([&](const crow::request& req) 
             {
                 nlohmann::json resultJson;
@@ -134,7 +142,7 @@ namespace TDA
                 return crow::response(responseCode, resultJson.dump());
         });
 
-        CROW_ROUTE(app, "/getlock").methods("POST"_method)
+        CROW_ROUTE(app, "/api/getlock").methods("POST"_method)
             ([&](const crow::request& req)
             {
 
@@ -244,7 +252,7 @@ namespace TDA
             });
 
         // Releasing the lock
-        CROW_ROUTE(app, "/releaselock").methods("DELETE"_method)
+        CROW_ROUTE(app, "/api/releaselock").methods("DELETE"_method)
             ([&](const crow::request& req) {     
             nlohmann::json resultJson;
             uint32_t responseCode = 0;
