@@ -44,8 +44,10 @@ namespace TDA
 
     void Server::init()
     {
-        TDA::QueryBuilder qb;
-        qb.select()->from("all_locks");
+        std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
+        nlohmann::json locks = p_queryBuilder->select()->from("all_locks")->fetchAll();
+        Logger::General_Debug(locks.dump());
+        startup();
     }
 
     void Server::startup()

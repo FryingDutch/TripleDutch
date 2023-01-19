@@ -8,12 +8,6 @@
 namespace TDA
 {
     nlohmann::json System::environmentVariables = FileHandler::readJSON("/env.json");
-    //setting functions
-    void System::errormsg(const char* message)
-    {
-        std::cerr << "[ERROR]: " << message << "! Terminating...\n";
-    }
-
     bool System::isDigit(std::string str)
     {
         if(str.length() < 1)

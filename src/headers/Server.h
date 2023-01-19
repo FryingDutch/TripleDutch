@@ -14,13 +14,12 @@ namespace TDA
 	private:
 		static std::vector<std::string> apiKeys;
 
-	public:
+	private:
 		static void startup();
 
 	public:
 		Server();
 		static std::optional<Lock> handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME);
-		static void checkLifetimes();
 		static void updateKeys();
 		static void init();
 	};
