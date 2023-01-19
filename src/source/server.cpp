@@ -62,7 +62,7 @@ namespace TDA
             TDA::LockManager::allLocks.push_back(lock);
         }
 
-        std::string debug = allLocks.size() + ": size";
+        std::string debug = "size: " + std::to_string(allLocks.size());
         Logger::General_Debug(debug);
         startup();
     }
