@@ -68,11 +68,11 @@ namespace TDA
             time_t validUntill = mktime(&tm_timeStamp);
 
             time_t now = time(0);
-            double difference = difftime(now, validUntill);
+            double difference = now - validUntill;
 
             lock.setLifeTime(difference);
             TDA::LockManager::allLocks.push_back(lock);
-            Logger::General_Debug(std::to_string(validUntill) + " " + std::to_string(now));
+            Logger::General_Debug(std::to_string(difference));
         }
 
         startup();
