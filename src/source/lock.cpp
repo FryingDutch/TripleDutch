@@ -12,7 +12,7 @@ namespace TDA
 		m_session_token = Lock::createToken();
 	}
 
-	Lock::Lock(uint32_t _id, std::string _apiKey, std::string _name, std::string _session_token, double _lifeTime)
+	Lock::Lock(long unsigned int _id, std::string _apiKey, std::string _name, std::string _session_token, double _lifeTime)
 		: m_id(_id), m_apiKey(_apiKey), m_name(_name), m_session_token(_session_token), m_lifeTime(_lifeTime)
 	{
 		m_start = std::chrono::high_resolution_clock::now();
