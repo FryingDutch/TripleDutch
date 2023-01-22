@@ -10,10 +10,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-find_package(Tcmalloc)
 find_package(Threads)
-find_package(MySQL)
-find_package(nlohmann_json 3.2.0)
 
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
