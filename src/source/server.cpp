@@ -180,9 +180,12 @@ namespace TDA
                 values.push_back(lockName);
 
                 double lifetime;
-                if (req.url_params.get("lifetime") != nullptr && System::isDigit(req.url_params.get("lifetime"))){
+                static int monthInSeconds = 2678400;
+                if (req.url_params.get("lifetime") != nullptr && System::isDigit(req.url_params.get("lifetime")) && req.url_params.get("lifetime") < monthInSeconds){
                     resultJson["lifetime"] = req.url_params.get("lifetime");
                     lifetime = boost::lexical_cast<double>(req.url_params.get("lifetime"));
+                } else if (req.url_params.get("lifetime") >= monthInSeconds) {
+                    lifetime = monthInSeconds;
                 } else {
                     lifetime = 30.0f;
                 }
