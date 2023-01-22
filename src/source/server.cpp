@@ -22,7 +22,6 @@ namespace TDA
 
     std::optional<Lock> Server::handleRequest(std::string _apiKey, std::string _lockName, const uint32_t TIMEOUT, const double LIFETIME)
     {
-        TDA::QueryBuilder* p_queryBuilder = new TDA::QueryBuilder;
         auto startTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> difference;
         std::optional<Lock> lock;
@@ -30,12 +29,11 @@ namespace TDA
 
         for (;;)
         {
-            lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME, p_queryBuilder);
+            lock = LockManager::createNewLock(_apiKey, _lockName, LIFETIME);
             currentTime = std::chrono::high_resolution_clock::now();
             difference = currentTime - startTime;
 
             if (lock || difference.count() > TIMEOUT){
-                delete p_queryBuilder;
                 return lock;
             }
 
@@ -204,25 +202,8 @@ namespace TDA
                 resultJson["sessiontoken"] = _lock ? _lock.value().getSessionToken() : "";
                 resultJson["lockacquired"] = _lock ? true : false;
                 resultJson["lockname"] = _lock ? _lock.value().getName() : "";
-                
-                values.push_back(resultJson["sessiontoken"]);
-
-                time_t now = time(0) + lifetime;
-                struct tm* time_info = localtime(&now);
-                char buffer[26];
-
-                strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
-                std::string validUntill(buffer);
-                values.push_back(validUntill);
-
-                std::vector<std::string>columns{"api_key", "lock_name", "session_token", "valid_untill"};
 
                 try{
-                    if(resultJson["lockacquired"]){
-                        std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
-                        std::string apiTable{"api_keys"};
-                        p_queryBuilder->insert("all_locks", columns, values)->execute();
-                    }
                     resultJson["status"] = "ok";
                     responseCode = 200;
                 } catch (sql::SQLException& exception) {
@@ -293,6 +274,7 @@ namespace TDA
 
         std::thread _lifeTime_thread(&LockManager::checkLifetimes);
         std::thread _apiKey_update_thread(&Server::updateKeys);
+        std::thread _remove_old_locks_thread(&LockManager::removeExpiredLocks);
 
         try{
             app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]).concurrency(100);
@@ -310,6 +292,7 @@ namespace TDA
 
         _lifeTime_thread.join();
         _apiKey_update_thread.join();
+        _remove_old_locks_thread.join();
     }
 
     void Server::updateKeys()

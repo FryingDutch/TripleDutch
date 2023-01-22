@@ -10,6 +10,17 @@ namespace TDA
 	{
 		m_start = std::chrono::high_resolution_clock::now();
 		m_session_token = Lock::createToken();
+
+		time_t totalLifeTimeInSecondsSince1970 = time(0) + _lifeTime;
+        struct tm* time_info = localtime(&totalLifeTimeInSecondsSince1970);
+        char buffer[26];
+
+        strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", time_info);
+        std::string lifeTime_TimeStamp(buffer);
+
+		std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
+        std::vector<std::string>columns{"api_key", "lock_name", "session_token", "valid_untill"};
+        p_queryBuilder->insert("all_locks", columns, {m_apiKey, m_name, m_session_token, lifeTime_TimeStamp})->execute();
 	}
 
 	Lock::Lock(long unsigned int _id, std::string _apiKey, std::string _name, std::string _session_token, double _lifeTime)

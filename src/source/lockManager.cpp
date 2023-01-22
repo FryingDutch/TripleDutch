@@ -10,32 +10,23 @@ namespace TDA
     std::vector<Lock> LockManager::allLocks;
     std::mutex LockManager::storageMutex;
 
-    std::optional<Lock> LockManager::createNewLock(std::string _apiKey, std::string _lockName, const double _LIFETIME, TDA::QueryBuilder*& _queryBuilder) 
+    std::optional<Lock> LockManager::createNewLock(std::string _apiKey, std::string _lockName, const double _LIFETIME) 
     {
         LockManager::storageMutex.lock();
 
-        // nlohmann::json results = _queryBuilder->select()->from("all_locks")->where("api_key = ?", {_apiKey})->where("lock_name = ?", {_lockName})->fetchAll();
-
-        // std::optional<Lock> lock;
-        // if (results.empty()) {
-        //     lock = Lock(_apiKey, _lockName, _LIFETIME);
-        //     LockManager::allLocks.push_back(lock.value());
-        // }
-
-        bool free{true};
+        bool lockIsFree{true};
 
         for (size_t i = 0; i < LockManager::allLocks.size(); i++)
         {
             if (_lockName == LockManager::allLocks[i].getName() && !LockManager::allLocks[i].expired())
             {
-                free = false;
+                lockIsFree = false;
                 break;
             }
         }
 
-        // insert a Lock if <lockName> is free/available
         std::optional<Lock> lock;
-        if (free) {
+        if (lockIsFree) {
             lock = Lock(_apiKey, _lockName, _LIFETIME);
             LockManager::allLocks.push_back(lock.value());
         }
@@ -69,7 +60,7 @@ namespace TDA
 
         for(;;)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10000));
             time_t now = time(0);
             struct tm* time_info = localtime(&now);
             char buffer[26];

@@ -13,7 +13,7 @@ namespace TDA
         static std::mutex storageMutex;
 
     public:
-        static std::optional<Lock> createNewLock(std::string _apiKey, std::string _lockName, const double _LIFETIME, TDA::QueryBuilder*& _queryBuilder);
+        static std::optional<Lock> createNewLock(std::string _apiKey, std::string _lockName, const double _LIFETIME);
         static void checkLifetimes();
         static void removeExpiredLocks();
     };
