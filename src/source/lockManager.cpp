@@ -29,7 +29,7 @@ namespace TDA
     {
         for(;;)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             LockManager::storageMutex.lock();
             for (size_t i = 0; i < LockManager::allLocks.size(); i++)
             {

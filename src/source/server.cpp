@@ -61,7 +61,7 @@ namespace TDA
 
             time_t now = time(0);
             double difference = validUntill - now;
-            TDA::Lock lock{std::stoi(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
+            TDA::Lock lock{std::stoul(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
             
             TDA::LockManager::allLocks.push_back(lock);
         }
@@ -295,7 +295,7 @@ namespace TDA
         std::thread _apiKey_update_thread(&Server::updateKeys);
 
         try{
-            app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]);
+            app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]).concurrency(100);
         } catch (boost::wrapexcept<boost::system::system_error>& ex) {
             std::cerr << ex.what();
             Logger::General_Exception(ex.what());

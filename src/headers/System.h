@@ -15,6 +15,6 @@ namespace TDA
         //functions used to define the settings of the server
         static void init();
 		static bool isDigit(std::string str);
-        static nlohmann::json getEnvironmentVariables(std::vector<std::string> _jsonKeys = {});
+        static nlohmann::json getEnvironmentVariables();
     };
 }
