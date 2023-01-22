@@ -18,8 +18,6 @@ WORKDIR /TripleDutch
 # get crow's include/ dir
 RUN git clone --branch v0.3 https://github.com/CrowCpp/crow crow &&\
     git clone --branch v3.11.2 https://github.com/nlohmann/json.git json &&\
-
-# make a directory we'll use to build
     mkdir build
 
 # copy all of the source files to the image
