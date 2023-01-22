@@ -198,7 +198,6 @@ namespace TDA
                 }
 
                 std::optional<Lock> _lock = Server::handleRequest(userApiKey, lockName, timeout, lifetime);
-
                 resultJson["sessiontoken"] = _lock ? _lock.value().getSessionToken() : "";
                 resultJson["lockacquired"] = _lock ? true : false;
                 resultJson["lockname"] = _lock ? _lock.value().getName() : "";

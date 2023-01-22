@@ -13,7 +13,6 @@ namespace TDA
     std::optional<Lock> LockManager::createNewLock(std::string _apiKey, std::string _lockName, const double _LIFETIME) 
     {
         LockManager::storageMutex.lock();
-
         bool lockIsFree{true};
 
         for (size_t i = 0; i < LockManager::allLocks.size(); i++)
@@ -30,7 +29,6 @@ namespace TDA
             lock = Lock(_apiKey, _lockName, _LIFETIME);
             LockManager::allLocks.push_back(lock.value());
         }
-
         LockManager::storageMutex.unlock();
         return lock;
     }
