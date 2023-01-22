@@ -141,11 +141,10 @@ namespace TDA
                 nlohmann::json resultJson;
                 resultJson["status"] = "";
                 resultJson["servername"] = System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"];
-                uint32_t responseCode = 200;
+                uint32_t responseCode = 200;           
 
-                std::vector<std::string>values;             
-
-                if (req.url_params.get("auth") == nullptr){
+                if (req.url_params.get("auth") == nullptr)
+                {
                     resultJson["status"] = "no api key";
                     responseCode = 400;
                     return crow::response(responseCode, resultJson.dump());
@@ -153,12 +152,15 @@ namespace TDA
                 std::string userApiKey = req.url_params.get("auth");
 
                 bool ApiKeyIsValid = false;
-                for(size_t i = 0; i < Server::apiKeys.size(); i++)
+                if(userApiKey.size() < 26)
                 {
-                    if(Server::apiKeys[i] == userApiKey)
+                    for(size_t i = 0; i < Server::apiKeys.size(); i++)
                     {
-                        ApiKeyIsValid = true;
-                        break;
+                        if(Server::apiKeys[i] == userApiKey)
+                        {
+                            ApiKeyIsValid = true;
+                            break;
+                        }
                     }
                 }
 
@@ -169,15 +171,12 @@ namespace TDA
                     return crow::response(responseCode, resultJson.dump());
                 }
 
-                values.push_back(req.url_params.get("auth"));
-
                 if (req.url_params.get("lockname") == nullptr){
                     resultJson["error"] = "no lockname supplied";
                     responseCode = 400;
                     return crow::response(responseCode, resultJson.dump());
                 }
                 std::string lockName = req.url_params.get("lockname");
-                values.push_back(lockName);
 
                 double lifetime;
                 static int monthInSeconds = 2678400;
@@ -199,36 +198,23 @@ namespace TDA
                 if (req.url_params.get("timeout") != nullptr && System::isDigit(req.url_params.get("timeout"))){
                     resultJson["timeout"] = req.url_params.get("timeout");
                     timeout = boost::lexical_cast<double>(req.url_params.get("timeout"));
-                }
-
-                else {
+                } else {
                     timeout = 0.0f;
                 }
 
-                std::optional<Lock> _lock = Server::handleRequest(userApiKey, lockName, timeout, lifetime);
-                resultJson["sessiontoken"] = _lock ? _lock.value().getSessionToken() : "";
-                resultJson["lockacquired"] = _lock ? true : false;
-                resultJson["lockname"] = _lock ? _lock.value().getName() : "";
-
-                try{
-                    resultJson["status"] = "ok";
-                    responseCode = 200;
-                } catch (sql::SQLException& exception) {
-                    Logger::SQL_Exception(exception.what());
-                    resultJson["status"] = "bad";
-                    resultJson["error"] = exception.what();
+                if(lockName.size() < 26){                
+                    std::optional<Lock> _lock = Server::handleRequest(userApiKey, lockName, timeout, lifetime);
+                    resultJson["sessiontoken"] = _lock ? _lock.value().getSessionToken() : "";
+                    resultJson["lockacquired"] = _lock ? true : false;
+                    resultJson["lockname"] = _lock ? _lock.value().getName() : "";
+                } else {
+                    resultJson["status"] = "Lock name is to long";
                     responseCode = 400;
-                } catch (std::logic_error& exception) {
-                    Logger::SQL_Exception(exception.what());
-                    resultJson["status"] = "bad";
-                    resultJson["error"] = exception.what();
-                    responseCode = 400;
-                } catch (...) {
-                    Logger::SQL_Exception("Unknown Error");
-                    resultJson["status"] = "bad";
-                    resultJson["error"] = "Unknown Error";
-                    responseCode = 400;
+                    return crow::response(responseCode, resultJson.dump());
                 }
+                
+                resultJson["status"] = "ok";
+                responseCode = 200;
 
                 return crow::response(responseCode, resultJson.dump());
             });
