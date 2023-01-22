@@ -14,13 +14,32 @@ namespace TDA
     {
         LockManager::storageMutex.lock();
 
-        nlohmann::json results = _queryBuilder->select()->from("all_locks")->where("api_key = ?", {_apiKey})->where("lock_name = ?", {_lockName})->fetchAll();
+        // nlohmann::json results = _queryBuilder->select()->from("all_locks")->where("api_key = ?", {_apiKey})->where("lock_name = ?", {_lockName})->fetchAll();
 
+        // std::optional<Lock> lock;
+        // if (results.empty()) {
+        //     lock = Lock(_apiKey, _lockName, _LIFETIME);
+        //     LockManager::allLocks.push_back(lock.value());
+        // }
+
+        bool free{true};
+
+        for (size_t i = 0; i < LockManager::allLocks.size(); i++)
+        {
+            if (_lockName == LockManager::allLocks[i].getName() && !LockManager::allLocks[i].expired())
+            {
+                free = false;
+                break;
+            }
+        }
+
+        // insert a Lock if <lockName> is free/available
         std::optional<Lock> lock;
-        if (results.empty()) {
+        if (free) {
             lock = Lock(_apiKey, _lockName, _LIFETIME);
             LockManager::allLocks.push_back(lock.value());
         }
+
         LockManager::storageMutex.unlock();
         return lock;
     }
