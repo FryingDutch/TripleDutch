@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <chrono>
-#include <mutex>
+#include "../headers/QueryBuilder.h"
 
 namespace TDA
 {
@@ -14,7 +14,7 @@ namespace TDA
         std::string m_session_token;
         double m_lifeTime;
         std::chrono::_V2::system_clock::time_point m_start;
-
+        
     private:
         std::string createToken();
 
@@ -30,10 +30,6 @@ namespace TDA
         std::string getSessionToken();
         double getLifeTime();
 
-        void setId(uint32_t _id) {m_id = _id;}
-        void setApiKey(std::string _apiKey) {m_apiKey = _apiKey;}
-        void setName(std::string _name) {m_name = _name;}
-        void setSessionToken(std::string _session_token) {m_session_token = _session_token;}
-        void setLifeTime(double _lifeTime) {m_lifeTime = _lifeTime;}
+        void removeFromDatabase();
     };
 }

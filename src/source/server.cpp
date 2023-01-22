@@ -62,9 +62,6 @@ namespace TDA
             time_t now = time(0);
             double difference = validUntill - now;
             TDA::Lock lock{std::stoi(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
-
-            Logger::General_Debug(std::to_string(lock.timeLeft()));
-            Logger::General_Debug(std::to_string(lock.getLifeTime()));
             
             TDA::LockManager::allLocks.push_back(lock);
         }

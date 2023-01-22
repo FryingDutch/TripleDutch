@@ -1,6 +1,7 @@
 #include <random>
 #include <algorithm>
 #include "../headers/Lock.h"
+#include "../headers/QueryBuilder.h"
 
 namespace TDA
 {
@@ -41,6 +42,12 @@ namespace TDA
 		std::chrono::duration<double> difference = currentTime - m_start;
 
 		return this->m_lifeTime - difference.count();
+	}
+
+	void Lock::removeFromDatabase()
+	{
+		std::unique_ptr<TDA::QueryBuilder> ptr_queryBuilder = std::make_unique<TDA::QueryBuilder>();
+		ptr_queryBuilder->Delete()->from("all_locks")->where("lock_name = ?", {m_name})->And("api_key = ?", {m_apiKey})->And("session_token = ?", {m_session_token})->execute();
 	}
     
     std::string Lock::getApiKey() { return m_apiKey; }
