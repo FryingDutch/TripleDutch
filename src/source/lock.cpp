@@ -11,6 +11,12 @@ namespace TDA
 		m_session_token = Lock::createToken();
 	}
 
+	Lock::Lock(uint32_t _id, std::string _apiKey, std::string _name, std::string _session_token, double _lifeTime)
+		: m_id(_id), m_apiKey(_apiKey), m_name(_name), m_session_token(_session_token), m_lifeTime(_lifeTime)
+	{
+		m_start = std::chrono::high_resolution_clock::now();
+	}
+
 	std::string Lock::createToken()
 	{				
 		static std::string str =
@@ -37,7 +43,8 @@ namespace TDA
 		return this->m_lifeTime - difference.count();
 	}
     
-    std::string Lock::getApiKey() { return this->m_apiKey; }
-	std::string Lock::getName() { return this->m_name; }
-	std::string Lock::getSessionToken() { return this->m_session_token; }
+    std::string Lock::getApiKey() { return m_apiKey; }
+	std::string Lock::getName() { return m_name; }
+	std::string Lock::getSessionToken() { return m_session_token; }
+	double Lock::getLifeTime() { return m_lifeTime; }
 }

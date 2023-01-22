@@ -48,30 +48,25 @@ namespace TDA
         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
         std::vector<std::vector<std::string>> allLocks = p_queryBuilder->select()->from("all_locks")->fetchAll();
 
-        TDA::Lock lock;
         enum {
             ID = 0, API_KEY, LOCK_NAME, SESSION_TOKEN, VALID_UNTILL
         };
 
         for(size_t i = 0; i < allLocks.size(); i++)
         {  
-            lock.setId(std::stoi(allLocks[i][ID]));
-            lock.setApiKey(allLocks[i][API_KEY]);
-            lock.setName(allLocks[i][LOCK_NAME]);
-            lock.setSessionToken(allLocks[i][SESSION_TOKEN]);
             std::istringstream ss(allLocks[i][VALID_UNTILL]);
-
             std::tm tm_timeStamp = {};
             ss >> std::get_time(&tm_timeStamp, "%Y-%m-%d %H:%M:%S");
             time_t validUntill = mktime(&tm_timeStamp);
 
             time_t now = time(0);
             double difference = validUntill - now;
+            TDA::Lock lock{std::stoi(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
 
-            lock.setLifeTime(difference);
-            TDA::LockManager::allLocks.push_back(lock);
-            Logger::General_Debug(std::to_string(difference));
             Logger::General_Debug(std::to_string(lock.timeLeft()));
+            Logger::General_Debug(std::to_string(lock.getLifeTime()));
+            
+            TDA::LockManager::allLocks.push_back(lock);
         }
 
         startup();

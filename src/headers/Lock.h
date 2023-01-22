@@ -19,13 +19,16 @@ namespace TDA
         std::string createToken();
 
     public:
-        Lock() = default;
         Lock(std::string _apiKey, std::string _name, double _lifeTime);
+        Lock(uint32_t _id, std::string _apiKey, std::string _name, std::string _session_token, double _lifeTime);
+        //~Lock();
+
         bool expired();
         double timeLeft();
         std::string getApiKey();
         std::string getName();
         std::string getSessionToken();
+        double getLifeTime();
 
         void setId(uint32_t _id) {m_id = _id;}
         void setApiKey(std::string _apiKey) {m_apiKey = _apiKey;}
