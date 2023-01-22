@@ -59,9 +59,7 @@ namespace TDA
             lock.setApiKey(allLocks[i][API_KEY]);
             lock.setName(allLocks[i][LOCK_NAME]);
             lock.setSessionToken(allLocks[i][SESSION_TOKEN]);
-
-            std::string timestamp = allLocks[i][VALID_UNTILL];
-            std::istringstream ss(timestamp);
+            std::istringstream ss(allLocks[i][VALID_UNTILL]);
 
             std::tm tm_timeStamp = {};
             ss >> std::get_time(&tm_timeStamp, "%Y-%m-%d %H:%M:%S");
@@ -72,6 +70,7 @@ namespace TDA
 
             lock.setLifeTime(difference);
             TDA::LockManager::allLocks.push_back(lock);
+            Logger::General_Debug(std::to_string(difference));
             Logger::General_Debug(std::to_string(lock.timeLeft()));
         }
 
