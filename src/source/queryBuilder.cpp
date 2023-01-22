@@ -195,7 +195,7 @@ namespace TDA
         try{
             statement->executeQuery(this->getQuery());
         } catch (sql::SQLException& exception) {
-            Logger::SQL_Exception(exception.what(), exception.getErrorCode());
+            //Logger::SQL_Exception(exception.what(), exception.getErrorCode());
         }
     }
 }
