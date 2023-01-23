@@ -113,9 +113,16 @@ namespace TDA
                     static std::string table = "all_locks";
                     static std::string whereStatement = "api_key = ?";
 
-                    resultJson["locks"] = p_queryBuilder->select(columns)->from(table)->where(whereStatement, {userApiKey})->fetchAll();
-                    resultJson["status"] = "ok";
-                    resultJson["error"] = "";
+                    try{
+                        resultJson["locks"] = p_queryBuilder->select(columns)->from(table)->where(whereStatement, {userApiKey})->fetchAll();
+                        resultJson["status"] = "ok";
+                        resultJson["error"] = "";
+                    } catch (...) {
+                        Logger::General_Exception("Bad memory allocation");
+                        resultJson["status"] = "ok";
+                        resultJson["error"] = "bad memory allocation";
+                    }
+
                     responseCode = 200;
                 } catch (sql::SQLException& exception) {
                     Logger::SQL_Exception(exception.what(), exception.getErrorCode());
