@@ -1,3 +1,7 @@
+env:
+  SSH_USER: ${{ secrets.SSH_USER }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
 on:
   push:
     branches:
@@ -15,4 +19,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the docker image
-      run: docker build .
+      run: | 
+        echo $SSH_USER
+        echo $SSH_PRIVATE_KEY
