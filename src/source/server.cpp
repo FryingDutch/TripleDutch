@@ -253,9 +253,7 @@ namespace TDA
             return crow::response(200, resultJson.dump());
         });
 
-        std::thread _lifeTime_thread(&LockManager::checkLifetimes);
-        std::thread _apiKey_update_thread(&Server::updateKeys);
-        std::thread _remove_old_locks_thread(&LockManager::removeExpiredLocks);
+
 
         try{
             app.port(System::getEnvironmentVariables()["tripledutch"]["system"]["port"]).server_name(System::getEnvironmentVariables()["tripledutch"]["system"]["server_name"]).ssl_file(System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_crt"], System::getEnvironmentVariables()["tripledutch"]["system"]["ssl_key"]).concurrency(100);
