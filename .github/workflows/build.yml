@@ -23,7 +23,7 @@ jobs:
       run: docker build . -t resourcelock --no-cache
 
   deploy:
-    # needs: [build]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -55,9 +55,7 @@ jobs:
           rm -f env.json &&
           cp -r ../../shared/env.json env.json &&
           rm -f nginx.conf &&
-          cp -r ../../shared/nginx.conf nginx.conf &&
-          rm -f docker-compose.yml &&
-          ln -sf ../../shared/docker-compose.yml docker-compose.yml
+          cp -r ../../shared/nginx.conf nginx.conf
         shell: bash
     - name: Run application
       uses: appleboy/ssh-action@master
