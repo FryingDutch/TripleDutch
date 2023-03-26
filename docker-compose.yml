@@ -58,7 +58,6 @@ volumes:
   db:
     driver: local
   nginx-data:
-
 networks:
   resourcelock-network:
     external: true
