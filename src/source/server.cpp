@@ -59,8 +59,11 @@ namespace TDA
 
             time_t now = time(0);
             double difference = validUntill - now;
-            TDA::Lock lock{std::stoul(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
-            
+            try {
+                TDA::Lock lock{std::stoul(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
+            } catch (...) {
+                Logger::General_Exception("This one");
+            }
             TDA::LockManager::allLocks.push_back(lock);
         }
 

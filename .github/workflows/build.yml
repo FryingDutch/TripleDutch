@@ -58,6 +58,21 @@ jobs:
           cp -r ../../shared/nginx.conf nginx.conf
         shell: bash
 
+    - name: Run application
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          cd ${{ env.RELEASES }}/../current &&
+          docker build . -t resourcelock --no-cache &&
+          docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_PASSWORD }} &&
+          docker push fryingdutch/resourcelock:latest &&
+          docker-compose up -d
+        shell: bash
+
     - name: Clean up deployments
       uses: appleboy/ssh-action@master
       with:
