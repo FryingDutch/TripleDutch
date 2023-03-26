@@ -39,19 +39,6 @@ jobs:
           source: .
           target: ${{ env.RELEASES }}/${{ github.run_number }}/
 
-    - name: Clean up deployments
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
-          if [[ $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) -gt 0 ]]; then
-              cd ${{ env.RELEASES }} && ls -1t | tail -n $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) | xargs -r rm -rf
-          fi
-        shell: bash
-
     - name: Set linkers
       uses: appleboy/ssh-action@master
       with:
@@ -68,5 +55,18 @@ jobs:
           rm -f env.json &&
           cp -r ../../shared/env.json env.json &&
           rm -f nginx.conf &&
-          cp -s ../../shared/nginx.conf nginx.conf
+          cp -r ../../shared/nginx.conf nginx.conf
+        shell: bash
+
+    - name: Clean up deployments
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          if [[ $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) -gt 0 ]]; then
+              cd ${{ env.RELEASES }} && ls -1t | tail -n $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) | xargs -r rm -rf
+          fi
         shell: bash
