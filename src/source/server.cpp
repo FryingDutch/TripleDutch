@@ -63,7 +63,7 @@ namespace TDA
                 TDA::Lock lock{std::stoul(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
                 TDA::LockManager::allLocks.push_back(lock);
             } catch (...) {
-                Logger::General_Exception("This one");
+                Logger::General_Exception("This one1");
             }
         }
 
