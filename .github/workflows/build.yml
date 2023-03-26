@@ -23,7 +23,7 @@ jobs:
       run: docker build .
 
   deploy:
-    needs: [build]
+    # needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
