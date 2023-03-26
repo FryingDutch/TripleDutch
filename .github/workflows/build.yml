@@ -55,7 +55,9 @@ jobs:
           rm -f env.json &&
           cp -r ../../shared/env.json env.json &&
           rm -f nginx.conf &&
-          cp -r ../../shared/nginx.conf nginx.conf
+          cp -r ../../shared/nginx.conf nginx.conf &&
+          rm -f docker-compose.yml &&
+          ln -sf ../../shared/docker-compose.yml docker-compose.yml
         shell: bash
 
     - name: Run application
