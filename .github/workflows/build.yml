@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build the docker image
-      run: docker build .
+      run: docker build . -t resourcelock --no-cache
 
   deploy:
     # needs: [build]
@@ -67,7 +67,6 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd ${{ env.RELEASES }}/../current &&
-          docker build . -t resourcelock --no-cache &&
           docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_PASSWORD }} &&
           docker push fryingdutch/resourcelock:latest &&
           docker-compose down &&
