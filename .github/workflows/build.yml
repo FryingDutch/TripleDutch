@@ -61,9 +61,12 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd ${{ env.RELEASES }} && 
-          rm ../current env.json && 
+          rm -f ../current && 
           ln -sf ${{ env.RELEASES }}/$(ls -tr | tail -n1) ../current &&
+          cd ../current &&
           ln -s ../../shared/ssl-certs ssl-certs &&
+          rm -f env.json &&
           ln -s ../../shared/env.json env.json &&
+          rm -f nginx.conf &&
           ln -s ../../shared/nginx.conf nginx.conf
         shell: bash
