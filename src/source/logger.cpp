@@ -71,7 +71,7 @@ namespace TDA
     void Logger::General_Exception(std::string _errorMessage, uint32_t _errorCode)
     {
         const std::string critical = "GENERAL_EXCEPTION: error-code(" + std::to_string(_errorCode) + ") error-message: '" + _errorMessage + "'";
-        Logger::writeToLogGeneral(critical + _errorMessage, "_exception");
+        Logger::writeToLogGeneral(critical, "_exception");
     }  
 
     // SQL Logs / PUBLIC
