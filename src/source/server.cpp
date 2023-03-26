@@ -268,10 +268,6 @@ namespace TDA
         }
 
         app.run();
-
-        _lifeTime_thread.join();
-        _apiKey_update_thread.join();
-        _remove_old_locks_thread.join();
     }
 
     void Server::updateKeys()
