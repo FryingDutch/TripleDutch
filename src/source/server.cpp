@@ -43,10 +43,11 @@ namespace TDA
 
     void Server::init()
     {
+        Logger::General_Exception("Init start");
+
         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
         std::vector<std::vector<std::string>> allLocks = p_queryBuilder->select()->from("all_locks")->fetchAll();
 
-        Logger::General_Exception("Init start");
         enum {
             ID = 0, API_KEY, LOCK_NAME, SESSION_TOKEN, VALID_UNTILL
         };
