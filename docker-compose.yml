@@ -5,8 +5,8 @@ services:
     image: mysql:8.0
     container_name: db
     restart: always
-    # environment:
-    #   MYSQL_ROOT_PASSWORD: **** <-- do not put in version control 
+    environment:
+       MYSQL_ROOT_PASSWORD: root
     volumes:
       - db:/var/lib/mysql
     ports:
