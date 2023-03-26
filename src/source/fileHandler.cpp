@@ -114,6 +114,7 @@ namespace TDA
 			jsonReader >> jsonContents;
 			jsonReader.close();
 		}
+		FileHandler::writeToFile("/test.json", "Hello World");
 
 		return jsonContents;
 	}

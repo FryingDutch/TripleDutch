@@ -44,7 +44,7 @@ namespace TDA
     void Server::init()
     {
 
-        //startup();
+        startup();
     }
 
     void Server::startup()
