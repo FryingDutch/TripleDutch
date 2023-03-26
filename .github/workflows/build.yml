@@ -50,7 +50,7 @@ jobs:
           cd ../current &&
           cp -r ../../shared/ssl-certs ssl-certs &&
           rm -f env.json &&
-          cp -r ../../shared/env.json env.json &&
+          cp -r ../../shared/env.json env.json
         shell: bash
 
     - name: Run application
