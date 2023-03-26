@@ -20,7 +20,7 @@ jobs:
         docker push fryingdutch/resourcelock:latest
 
   deploy:
-    # needs: [build]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
