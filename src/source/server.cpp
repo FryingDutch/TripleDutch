@@ -43,6 +43,7 @@ namespace TDA
 
     void Server::init()
     {
+        while(true){
         Logger::General_Exception("Init start");
 
         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
@@ -50,6 +51,7 @@ namespace TDA
 
         Logger::General_Exception("Init end");
         startup();
+        }
     }
 
     void Server::startup()
