@@ -70,6 +70,7 @@ jobs:
           docker build . -t resourcelock --no-cache &&
           docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_PASSWORD }} &&
           docker push fryingdutch/resourcelock:latest &&
+          docker-compose down &&
           docker-compose up -d
         shell: bash
 
