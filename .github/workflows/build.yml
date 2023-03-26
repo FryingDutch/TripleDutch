@@ -60,6 +60,10 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd ${{ env.RELEASES }} && rm ../current && ln -sf ${{ env.RELEASES }}/$(ls -tr | tail -n1) ../current
-          cd ${{ env.RELEASES }}/../current && ln -s ../../shared/ssl-certs ssl-certs && ln -s ../../shared/env.json env.json && ln -s ../../shared/nginx.conf nginx.conf
+          cd ${{ env.RELEASES }} && 
+          rm ../current env.json && 
+          ln -sf ${{ env.RELEASES }}/$(ls -tr | tail -n1) ../current &&
+          ln -s ../../shared/ssl-certs ssl-certs &&
+          ln -s ../../shared/env.json env.json && 
+          ln -s ../../shared/nginx.conf nginx.conf
         shell: bash
