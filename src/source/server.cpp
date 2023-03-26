@@ -43,18 +43,29 @@ namespace TDA
 
     void Server::init()
     {
-        while(true)
-        {
-            
-        }
-        Logger::General_Exception("Init start");
-
         std::unique_ptr<TDA::QueryBuilder> p_queryBuilder = std::make_unique<TDA::QueryBuilder>();
         std::vector<std::vector<std::string>> allLocks = p_queryBuilder->select()->from("all_locks")->fetchAll();
 
+        Logger::General_Exception("Init start");
+        enum {
+            ID = 0, API_KEY, LOCK_NAME, SESSION_TOKEN, VALID_UNTILL
+        };
+
+        for(size_t i = 0; i < allLocks.size(); i++)
+        {  
+            std::istringstream ss(allLocks[i][VALID_UNTILL]);
+            std::tm tm_timeStamp = {};
+            ss >> std::get_time(&tm_timeStamp, "%Y-%m-%d %H:%M:%S");
+            time_t validUntill = mktime(&tm_timeStamp);
+
+            time_t now = time(0);
+            double difference = validUntill - now;
+            TDA::Lock lock{std::stoul(allLocks[i][ID]), allLocks[i][API_KEY], allLocks[i][LOCK_NAME], allLocks[i][SESSION_TOKEN], difference};
+            TDA::LockManager::allLocks.push_back(lock);
+        }
+
         Logger::General_Exception("Init end");
         startup();
-
     }
 
     void Server::startup()
@@ -279,7 +290,6 @@ namespace TDA
             Logger::General_Exception("Unknown error during crow configuration");
         }
 
-        Logger::General_Exception("Startup (part-2) end");
         app.run();
 
         _lifeTime_thread.join();
