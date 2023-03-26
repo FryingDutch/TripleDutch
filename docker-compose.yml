@@ -22,7 +22,7 @@ services:
       - PMA_HOST=db
     restart: always
     ports:
-      - 8081:8080
+      - 8080:8080
     networks:
       - resourcelock-network
   td_server:
@@ -45,6 +45,7 @@ services:
     container_name: nginx
     ports:
       - "443:443"
+      - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-data:/var/cache/nginx
