@@ -64,6 +64,6 @@ jobs:
           rm ../current env.json && 
           ln -sf ${{ env.RELEASES }}/$(ls -tr | tail -n1) ../current &&
           ln -s ../../shared/ssl-certs ssl-certs &&
-          ln -s ../../shared/env.json env.json && 
+          ln -s ../../shared/env.json env.json &&
           ln -s ../../shared/nginx.conf nginx.conf
         shell: bash
