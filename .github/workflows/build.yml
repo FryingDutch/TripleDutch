@@ -76,7 +76,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          if [[ $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) -gt 0 ]]; then
-              cd ${{ env.RELEASES }} && ls -1t | tail -n $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) | xargs -r rm -rf
+          numberOfDeployments = ($(ls -1 ${{ env.RELEASES }} | wc -l)
+          if [[ $numberOfDeployments -gt 5 ]]; then
+              cd ${{ env.RELEASES }} && ls -1t | tail -n $(($numberOfDeployments - 5)) | xargs -r rm -rf
           fi
         shell: bash
