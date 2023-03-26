@@ -1,6 +1,5 @@
 env:
-  SSH_USER: ${{ secrets.SSH_USER }}
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  RELEASES: /root/application/releases
 
 on:
   push:
@@ -11,14 +10,56 @@ on:
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Description'  
+        description: 'Description'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Build the docker image
-      run: | 
-        echo $SSH_USER
-        echo $SSH_PRIVATE_KEY
+      run: docker build .
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: scp files
+      uses: appleboy/scp-action@master
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: .
+          target: ${{ env.RELEASES }}/${{ github.run_number }}/
+
+    - name: Clean up deployments
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          if [[ $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) -gt 0 ]]; then
+              cd ${{ env.RELEASES }} && ls -1t | tail -n $(($(ls -1 ${{ env.RELEASES }} | wc -l) - 5)) | xargs -r rm -rf
+          fi
+        shell: bash
+
+    - name: Set linkers
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          cd ${{ env.RELEASES }} && rm ../current && ln -sf ${{ env.RELEASES }}/$(ls -tr | tail -n1) ../current
+          cd ${{ env.RELEASES }}/../current && ln -s ../../shared/ssl-certs ssl-certs && ln -s ../../shared/env.json env.json && ln -s ../../shared/nginx.conf nginx.conf
+        shell: bash
