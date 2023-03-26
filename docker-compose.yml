@@ -11,6 +11,8 @@ services:
       - db:/var/lib/mysql
     ports:
       - '3306:3306'
+    networks:
+      - resourcelock-network
   phpma:
     image: phpmyadmin/phpmyadmin
     container_name: phpma
@@ -21,6 +23,8 @@ services:
     restart: always
     ports:
       - 8081:8080
+    networks:
+      - resourcelock-network
   td_server:
     image: resourcelock:latest
     container_name: tripledutch
@@ -34,6 +38,8 @@ services:
     volumes:
       - ./logs:/logs
       - ./ssl-certs:/ssl-certs
+    networks:
+      - resourcelock-network
   nginx:
     image: nginx
     container_name: nginx
@@ -46,6 +52,8 @@ services:
     links:
       - td_server
     restart: always
+    networks:
+      - resourcelock-network
 volumes:
   db:
     driver: local
