@@ -20,7 +20,7 @@ jobs:
         docker push fryingdutch/resourcelock:latest
 
   deploy:
-    needs: [build]
+    # needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -51,9 +51,8 @@ jobs:
           cp -r ../../shared/ssl-certs ssl-certs &&
           rm -f env.json &&
           cp -r ../../shared/env.json env.json &&
-          rm -f nginx.conf &&
-          cp -r ../../shared/nginx.conf nginx.conf
         shell: bash
+
     - name: Run application
       uses: appleboy/ssh-action@master
       with:
@@ -76,7 +75,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          numberOfDeployments = ($(ls -1 ${{ env.RELEASES }} | wc -l)
+          numberOfDeployments = $(ls -1 ${{ env.RELEASES }} | wc -l)
           if [[ $numberOfDeployments -gt 5 ]]; then
               cd ${{ env.RELEASES }} && ls -1t | tail -n $(($numberOfDeployments - 5)) | xargs -r rm -rf
           fi
