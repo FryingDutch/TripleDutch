@@ -69,9 +69,7 @@ jobs:
           cd ${{ env.RELEASES }}/../current &&
           docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_PASSWORD }} &&
           docker push fryingdutch/resourcelock:latest &&
-          docker-compose down &&
-          docker container prune -f &&
-          docker-compose up -d
+          docker restart td_server
         shell: bash
 
     - name: Clean up deployments
