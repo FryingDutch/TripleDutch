@@ -26,7 +26,7 @@ services:
     networks:
       - resourcelock-network
   td_server:
-    image: resourcelock:latest
+    image: fryingdutch/resourcelock:latest
     container_name: tripledutch
     restart: unless-stopped
     ports: 
