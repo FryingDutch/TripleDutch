@@ -6,6 +6,7 @@
 namespace TDA
 {
 	std::string FileHandler::workDir{ "/" };
+	
 
 	void FileHandler::setWorkDir(const char* _path)
 	{
