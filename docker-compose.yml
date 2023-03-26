@@ -22,7 +22,7 @@ services:
       - PMA_HOST=db
     restart: always
     ports:
-      - 8080:8080
+      - 8081:80
     networks:
       - resourcelock-network
   td_server:
